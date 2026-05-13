@@ -6,6 +6,7 @@ Date: 2026-05-13
 |---|---|---|
 | GitHub repo reserved | Done | `https://github.com/auraoneai/robotics-studio-open` created via authenticated `gh`. |
 | Repo settings drafted | Done | `.github/settings.yml`. |
+| Branch protection applied | Done | Main branch requires DCO, CI, security/SBOM/license, accessibility/performance, 2 approvals, and CODEOWNERS review. |
 | Issues and labels drafted | Done | `.github/ISSUE_TEMPLATE/*` and `.github/settings.yml`. |
 | CONTRIBUTING.md with DCO | Done | `CONTRIBUTING.md`. |
 | CODEOWNERS | Done | `CODEOWNERS`. |

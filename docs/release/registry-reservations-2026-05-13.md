@@ -4,7 +4,7 @@ Date: 2026-05-13
 
 | Registry | Name | Status | Evidence / Exact next action |
 |---|---|---|---|
-| GitHub | `auraoneai/robotics-studio-open` | Reserved | Created via `gh repo create` on 2026-05-13. |
+| GitHub | `auraoneai/robotics-studio-open` | Reserved and configured | Created via `gh repo create` on 2026-05-13. Scaffold pushed to `main` at `44ce1af`; labels and branch protection applied. |
 | Homebrew | Cask `robotics-studio-open` | Drafted | Submit `distribution/homebrew/Casks/robotics-studio-open.rb` to `auraoneai/homebrew-open`. |
 | PyPI | `robostudio-engine` | Blocked | No PyPI token/trusted publisher in local env. Configure trusted publisher from `distribution/pypi/robostudio-engine-trusted-publisher.md`. |
 | Install URL | `install.auraone.ai/robotics-studio` | Drafted | Apply DNS/CDN and route to installer server config. |

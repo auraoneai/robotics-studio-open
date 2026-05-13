@@ -5,6 +5,11 @@ Date: 2026-05-13
 ## Completed Setup
 
 - Public GitHub repository reserved: `https://github.com/auraoneai/robotics-studio-open`.
+- Initial release-readiness scaffold pushed to `main` at commit `44ce1af`.
+- GitHub repository settings, labels, and branch protection applied where the
+  authenticated GitHub account had access. Main now requires DCO, matrix CI,
+  security/SBOM/license, accessibility/performance, 2 approvals, and CODEOWNERS
+  review.
 - Local repository release skeleton created with MIT license, DCO contribution
   model, CODEOWNERS, security policy, issue templates, PR template, branch
   protection/settings draft, CI, DCO, release, SBOM, license, accessibility, and
@@ -18,6 +23,8 @@ Date: 2026-05-13
 Local environment check on 2026-05-13:
 
 - `gh auth status`: authenticated as `gchahal1982`; org `auraoneai` visible.
+- `gh repo create`, `git push`, `gh repo edit`, label creation, and branch
+  protection succeeded for `auraoneai/robotics-studio-open`.
 - `GH_TOKEN`, `GITHUB_TOKEN`, `PYPI_API_TOKEN`, `HF_TOKEN`,
   `CLOUDFLARE_API_TOKEN`, `APPLE_ID`, `APPLE_TEAM_ID`,
   `APPLE_APP_SPECIFIC_PASSWORD`, `WINDOWS_EV_CERT_THUMBPRINT`: missing from
