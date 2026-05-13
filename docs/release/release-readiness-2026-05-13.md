@@ -10,6 +10,8 @@ Date: 2026-05-13
   authenticated GitHub account had access. Main now requires DCO, matrix CI,
   security/SBOM/license, accessibility/performance, 2 approvals, and CODEOWNERS
   review.
+- Follow-up evidence PR opened after branch protection blocked direct push:
+  `https://github.com/auraoneai/robotics-studio-open/pull/1`.
 - Local repository release skeleton created with MIT license, DCO contribution
   model, CODEOWNERS, security policy, issue templates, PR template, branch
   protection/settings draft, CI, DCO, release, SBOM, license, accessibility, and
