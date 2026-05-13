@@ -1,0 +1,18 @@
+# Robotics Studio Open ownership
+
+* @auraoneai/robotics-studio-maintainers
+
+/.github/** @auraoneai/robotics-studio-maintainers @auraoneai/security
+/CODEOWNERS @auraoneai/robotics-studio-maintainers @auraoneai/security
+/CONTRIBUTING.md @auraoneai/robotics-studio-maintainers
+/SECURITY.md @auraoneai/robotics-studio-maintainers @auraoneai/security
+/LICENSE @auraoneai/robotics-studio-maintainers
+/docs/release/** @auraoneai/robotics-studio-maintainers @auraoneai/security
+/scripts/** @auraoneai/robotics-studio-maintainers @auraoneai/security
+/distribution/** @auraoneai/robotics-studio-maintainers @auraoneai/security
+
+# Product implementation owners to be activated when Agent 2-4 land code.
+/app/** @auraoneai/robotics-studio-maintainers
+/desktop/** @auraoneai/robotics-studio-maintainers
+/engine/** @auraoneai/robotics-studio-maintainers
+/fixtures/** @auraoneai/robotics-studio-maintainers

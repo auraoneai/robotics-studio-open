@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-latest
+            python: "3.11"
+            node: "20.19.5"
+          - name: linux-arm64
+            os: ubuntu-24.04-arm
+            python: "3.11"
+            node: "20.19.5"
+          - name: macos-arm64
+            os: macos-14
+            python: "3.11"
+            node: "20.19.5"
+          - name: macos-x64
+            os: macos-13
+            python: "3.11"
+            node: "20.19.5"
+          - name: windows-x64
+            os: windows-latest
+            python: "3.11"
+            node: "20.19.5"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10.18.0"
+      - name: Install JS dependencies when present
+        shell: bash
+        run: |
+          if [ -f package.json ]; then pnpm install --frozen-lockfile; fi
+      - name: Python package smoke when present
+        shell: bash
+        run: |
+          if [ -f pyproject.toml ]; then
+            python -m pip install --upgrade pip build
+            python -m build
+          fi
+      - name: Release ops manifest check
+        shell: bash
+        run: |
+          test -f CODEOWNERS
+          test -f CONTRIBUTING.md
+          test -f SECURITY.md
+          test -f .github/settings.yml
+
+  gpu:
+    name: gpu-video-embedding
+    runs-on: [self-hosted, linux, x64, gpu]
+    if: ${{ vars.ROBOTICS_GPU_CI_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: GPU smoke gate
+        run: |
+          nvidia-smi
+          test -x scripts/verify-gpu-smoke.sh
+          scripts/verify-gpu-smoke.sh

@@ -1,0 +1,51 @@
+name: Release blocker
+description: Track a dated blocker for release, registry, security, legal, DNS, or marketplace work.
+title: "[blocker]: "
+labels: ["blocker", "release"]
+body:
+  - type: input
+    id: date
+    attributes:
+      label: Date opened
+      placeholder: "2026-05-13"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Legal
+        - Security
+        - Signing
+        - Notarization
+        - Homebrew
+        - PyPI
+        - winget
+        - DNS
+        - GitHub
+        - Hugging Face
+        - Accessibility
+        - Performance
+        - CI
+        - Launch
+    validations:
+      required: true
+  - type: textarea
+    id: blocker
+    attributes:
+      label: Blocker
+    validations:
+      required: true
+  - type: textarea
+    id: next_action
+    attributes:
+      label: Exact next action
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+    validations:
+      required: true

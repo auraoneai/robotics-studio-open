@@ -1,0 +1,31 @@
+name: Accessibility and Performance
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10.18.0"
+      - name: Accessibility script presence
+        run: |
+          test -f scripts/verify-accessibility.sh
+          test -f scripts/verify-performance-baseline.sh
+      - name: Accessibility smoke
+        run: scripts/verify-accessibility.sh
+      - name: Performance baseline smoke
+        run: scripts/verify-performance-baseline.sh

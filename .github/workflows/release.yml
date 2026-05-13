@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, e.g. 0.1.0"
+        required: true
+      channel:
+        description: "stable, beta, or nightly"
+        required: true
+        default: "beta"
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            artifact: dmg
+          - os: ubuntu-latest
+            artifact: appimage-deb-rpm
+          - os: windows-latest
+            artifact: msi
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10.18.0"
+      - name: Build release artifact
+        shell: bash
+        run: |
+          test -x scripts/build-release-artifacts.sh
+          scripts/build-release-artifacts.sh "${{ inputs.version || github.ref_name }}" "${{ matrix.artifact }}"
+      - name: Sign macOS artifact
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: scripts/sign-and-notarize-macos.sh dist/
+      - name: Sign Windows artifact
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          WINDOWS_EV_CERT_THUMBPRINT: ${{ secrets.WINDOWS_EV_CERT_THUMBPRINT }}
+        run: scripts/sign-windows.ps1 -ArtifactDirectory dist
+      - name: Sign Linux artifact
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+        run: scripts/sign-linux.sh dist/
+      - name: Checksums
+        shell: bash
+        run: |
+          cd dist
+          shasum -a 256 * > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: robotics-studio-open-${{ matrix.artifact }}
+          path: dist/
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+      - name: Publish GitHub release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/**/*
+      - name: Publish update manifest
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: scripts/publish-update-manifest.sh "${{ inputs.version || github.ref_name }}" "${{ inputs.channel || 'stable' }}" release-artifacts

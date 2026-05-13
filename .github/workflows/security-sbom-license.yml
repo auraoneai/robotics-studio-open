@@ -1,0 +1,69 @@
+name: Security, SBOM, and License
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10.18.0"
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Python dependency CVE scan
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          if [ -f pyproject.toml ]; then
+            python -m pip_audit --progress-spinner off --format=json --output=pip-audit.json
+          else
+            echo '{"dependencies":[],"vulnerabilities":[]}' > pip-audit.json
+          fi
+      - name: License scan
+        run: |
+          python -m pip install licensecheck
+          if [ -f pyproject.toml ]; then
+            licensecheck --zero --format ansi --using pyproject.toml --fail-licenses GPL AGPL LGPL
+          fi
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-sbom-license
+          path: |
+            pip-audit.json
+            sbom.cdx.json
+      - name: Attest SBOM
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: sbom.cdx.json
