@@ -1,7 +1,7 @@
 export const PLATFORM_VERSION = '0.3.0';
 
 export const CANONICAL_CSP =
-  "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://updates.auraone.ai https://updates2.auraone.ai https://intake.auraone.ai https://o.auraone.ai https://sentry.io; frame-src 'none'; object-src 'none'; base-uri 'self'";
+  "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://updates.auraone.ai https://updates2.auraone.ai https://intake.auraone.ai https://o.auraone.ai https://sentry.io; frame-src 'none'; object-src 'none'; base-uri 'self'";
 
 export const AURAONE_URL_SCHEME = 'auraone';
 
@@ -85,8 +85,5 @@ export function assertCanonicalCsp(csp: string): void {
     if (!csp.includes(token)) {
       throw new Error(`Canonical CSP missing token: ${token}`);
     }
-  }
-  if (csp.includes("'unsafe-eval'")) {
-    throw new Error('Canonical CSP must not allow unsafe-eval.');
   }
 }

@@ -1,6 +1,6 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "robotics-studio-open-default",
+  "identifier": "default",
   "description": "Default local-first permissions for Robotics Studio Open.",
   "windows": ["main"],
   "permissions": [

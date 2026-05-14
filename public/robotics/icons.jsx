@@ -75,13 +75,19 @@ function RSMark({ size = 32 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: 8,
-      background: 'oklch(0.22 0.04 195)',
+      background: 'linear-gradient(135deg, oklch(0.26 0.07 205), oklch(0.48 0.14 165) 58%, oklch(0.68 0.14 70))',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      color: 'var(--ro-accent)',
-      boxShadow: 'inset 0 0 0 1px oklch(0.45 0.13 195 / 0.5), 0 1px 0 oklch(0.99 0.005 75)',
-      fontFamily: 'var(--ro-mono)', fontWeight: 600, fontSize: size * 0.34,
-      letterSpacing: '0.06em',
+      color: 'oklch(0.96 0.02 100)',
+      boxShadow: 'inset 0 0 0 1px oklch(0.9 0.05 150 / 0.36), 0 1px 0 oklch(0.99 0.005 75)',
+      fontFamily: 'var(--ro-mono)', fontWeight: 800, fontSize: size * 0.34,
+      letterSpacing: '0.04em',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
+      <span style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(140deg, transparent 0 34%, oklch(0.86 0.13 165 / 0.24) 34% 38%, transparent 38% 100%)',
+      }}/>
       RS
     </div>
   );

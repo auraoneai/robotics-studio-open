@@ -1,34 +1,10 @@
 // Robotics Studio Open · shell (top bar, left rail, tab bar, right rail, status)
 
 function TopBar({ tab, onTab, theme, onTheme, onCommand }) {
-  const Icon = window.ROIcon, RSMark = window.RSMark;
+  const Icon = window.ROIcon;
   return (
-    <header style={{
-      display: 'flex', alignItems: 'center', gap: 14,
-      padding: '12px 18px',
-      borderBottom: '1px solid var(--ro-line)',
-      background: 'var(--ro-paper)',
-      flex: '0 0 auto',
-      minHeight: 60,
-      whiteSpace: 'nowrap',
-    }}>
-      {/* Logo lockup */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-        <RSMark size={34}/>
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-          <span className="ro-display" style={{ fontSize: 22, color: 'var(--ro-ink)' }}>
-            Robotics Studio
-          </span>
-          <span className="ro-eyebrow-mono" style={{ fontSize: 9, color: 'var(--ro-accent-ink)', letterSpacing: '0.18em' }}>
-            AURAONE · OPEN
-          </span>
-        </div>
-      </div>
-
-      <div style={{ width: 1, height: 28, background: 'var(--ro-line)' }}/>
-
-      {/* Active dataset chip */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+    <header className="ro-topbar">
+      <div className="ro-active-dataset">
         <span className="ro-dot is-ok is-pulse"/>
         <span className="ro-mono" style={{ fontSize: 13, color: 'var(--ro-ink)', fontWeight: 600 }}>so101_kitchen_v3</span>
         <span className="ro-mono" style={{ fontSize: 11.5, color: 'var(--ro-ink-3)' }}>12,847 ep</span>
@@ -91,13 +67,7 @@ function TabBar({ tab, onTab }) {
   const Icon = window.ROIcon;
   const TABS = window.RO_TABS;
   return (
-    <div style={{
-      display: 'flex', alignItems: 'flex-end', gap: 18,
-      padding: '4px 22px 0',
-      borderBottom: '1px solid var(--ro-line)',
-      background: 'var(--ro-paper)',
-      flex: '0 0 auto',
-    }}>
+    <div className="ro-tabbar">
       {TABS.map(t => (
         <button key={t.id} className={`ro-tab ${tab === t.id ? 'is-active' : ''}`} onClick={() => onTab(t.id)}>
           <Icon name={t.icon} size={13}/>
@@ -115,24 +85,27 @@ function TabBar({ tab, onTab }) {
 }
 
 function LeftRail() {
-  const Icon = window.ROIcon;
+  const Icon = window.ROIcon, RSMark = window.RSMark;
   const datasets = window.RO_DATASETS;
   const views = window.RO_SAVED_VIEWS;
   return (
-    <aside style={{
-      width: 240, flex: '0 0 auto',
-      borderRight: '1px solid var(--ro-line)',
-      background: 'var(--ro-paper-2)',
-      display: 'flex', flexDirection: 'column',
-      overflow: 'hidden',
-    }}>
-      <div style={{ padding: 14 }}>
-        <button className="ro-btn is-primary" style={{ width: '100%', justifyContent: 'center' }}>
-          <Icon name="plus" size={13}/> Open dataset
-        </button>
+    <aside className="sidebar ro-sidebar" aria-label="Robotics Studio navigation">
+      <div className="brand ro-sidebar-brand">
+        <RSMark size={42}/>
+        <div className="ro-sidebar-brand-copy">
+          <span className="ro-display">Robotics Studio</span>
+          <span className="ro-eyebrow-mono">Desktop IDE</span>
+        </div>
       </div>
 
-      <div style={{ padding: '0 14px 14px' }}>
+      <nav className="ro-sidebar-nav" aria-label="Datasets, filters, and saved views">
+        <div style={{ padding: 14 }}>
+          <button className="ro-btn is-primary" style={{ width: '100%', justifyContent: 'center' }}>
+            <Icon name="plus" size={13}/> Open dataset
+          </button>
+        </div>
+
+        <div style={{ padding: '0 14px 14px' }}>
         <div className="ro-eyebrow-mono" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 7 }}>
           <Icon name="database" size={11}/> Datasets
         </div>
@@ -158,9 +131,9 @@ function LeftRail() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
 
-      <div style={{ padding: '0 14px 14px', borderTop: '1px solid var(--ro-line)', paddingTop: 14 }}>
+        <div style={{ padding: '0 14px 14px', borderTop: '1px solid var(--ro-line)', paddingTop: 14 }}>
         <div className="ro-eyebrow-mono" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
           <Icon name="filter" size={11}/> Filters
         </div>
@@ -187,11 +160,11 @@ function LeftRail() {
         <RailField label="Sort">
           <RailSelect value="readiness"/>
         </RailField>
-      </div>
+        </div>
 
-      <div style={{ flex: 1 }}/>
+        <div style={{ minHeight: 12 }}/>
 
-      <div style={{ padding: '14px', borderTop: '1px solid var(--ro-line)' }}>
+        <div style={{ padding: '14px', borderTop: '1px solid var(--ro-line)' }}>
         <div className="ro-eyebrow-mono" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
           <Icon name="bookmark" size={11}/> Saved views
         </div>
@@ -204,7 +177,8 @@ function LeftRail() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </nav>
     </aside>
   );
 }
@@ -240,13 +214,7 @@ function RightRail() {
   const H = window.RO_HEALTH;
   const sensors = window.RO_SENSORS;
   return (
-    <aside style={{
-      width: 290, flex: '0 0 auto',
-      borderLeft: '1px solid var(--ro-line)',
-      background: 'var(--ro-paper-2)',
-      display: 'flex', flexDirection: 'column',
-      overflow: 'auto',
-    }}>
+    <aside className="ro-right-rail">
       {/* Dataset health */}
       <div style={{ padding: 16 }}>
         <div className="ro-eyebrow-mono" style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -321,15 +289,7 @@ function ShortcutRow({ label, keys }) {
 
 function StatusBar({ tab }) {
   return (
-    <footer style={{
-      flex: '0 0 auto',
-      borderTop: '1px solid var(--ro-line)',
-      background: 'var(--ro-paper-2)',
-      display: 'flex', alignItems: 'center', gap: 18,
-      padding: '0 18px',
-      height: 30,
-      fontFamily: 'var(--ro-mono)', fontSize: 11, color: 'var(--ro-ink-3)',
-    }}>
+    <footer className="ro-statusbar">
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         <span className="ro-dot is-ok"/> engine OK
       </span>
