@@ -1,0 +1,25 @@
+{
+  "data_status": "synthetic_mock",
+  "purpose": "Example sensor QA layer for a mock robotics review episode.",
+  "episode_id": "mock-sensor-qa-001",
+  "sensor_qa": {
+    "episode_quality": "needs_review",
+    "flags": [
+      {
+        "flag_id": "SQA_CAMERA_DESYNC",
+        "severity": "major",
+        "affected_sensor_ids": ["cam_overhead", "cam_wrist"],
+        "recommended_action": "needs_review",
+        "note": "Synthetic streams are offset in this example to exercise reviewer workflow."
+      },
+      {
+        "flag_id": "SQA_RESET_STATE_MISSING",
+        "severity": "major",
+        "affected_sensor_ids": ["cam_overhead"],
+        "recommended_action": "needs_review",
+        "note": "Mock reset frame is missing; this is QA metadata, not a collection claim."
+      }
+    ],
+    "reviewer_notes": "Manual QA findings are separate from automated schema validation."
+  }
+}

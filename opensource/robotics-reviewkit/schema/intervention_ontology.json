@@ -1,0 +1,17 @@
+{
+  "schema_version": "intervention-ontology-v0.1",
+  "disclosure": "Mock ontology; not real robot data.",
+  "intervention_types": [
+    "human_takeover",
+    "pause_and_reset",
+    "object_reposition",
+    "safety_stop",
+    "annotation_only"
+  ],
+  "boundary_fields": [
+    "start_s",
+    "end_s",
+    "reason",
+    "linked_failure_mode"
+  ]
+}

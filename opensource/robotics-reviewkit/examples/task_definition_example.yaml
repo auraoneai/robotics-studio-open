@@ -1,0 +1,20 @@
+data_status: synthetic_mock
+purpose: "Example task definition reference. This is not evidence that data was collected."
+task_id: TASK_PLACE_CUP
+variant: tabletop-target-zone-v0
+environment_requirements:
+  target_zone_visible: true
+  cup_is_empty_and_nonbreakable: true
+  private_place_or_person_present: false
+review_layers:
+  required_segments:
+    - approach
+    - grasp
+    - manipulate
+    - release
+  required_failure_checks:
+    - FAIL_GRASP_UNSTABLE
+    - FAIL_OBJECT_STATE_MISMATCH
+  required_sensor_qa:
+    - SQA_SUCCESS_LABEL_AMBIGUOUS
+    - SQA_OCCLUSION_CRITICAL

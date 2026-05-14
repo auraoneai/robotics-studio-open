@@ -1,0 +1,149 @@
+version: 0.1.0
+status: public_draft
+data_notice: "Specification library only. These tasks do not imply AuraOne collected, validated, or benchmarked robotics data."
+schema_mapping:
+  task_id: task.task_id
+  task_name: task.name
+  environment_requirements: task.environment_id
+  reset_instructions: task.reset_state_id
+tasks:
+  - id: TASK_OPEN_DRAWER
+    name: Open drawer
+    family: articulated_object
+    description: "Open a drawer to a target distance without displacing nearby props."
+    success_criteria:
+      - "Drawer reaches target open distance or visible stop."
+      - "Handle remains intact and no unrelated object is moved."
+    failure_criteria:
+      - "Drawer remains closed or only partially opens below target."
+      - "Robot loses contact without recovery or tips the fixture."
+    required_sensor_notes: "At least one view must show handle contact and final drawer state."
+    annotation_requirements: "Mark approach, grasp/contact, pull, recovery, and final-state segments."
+    reset_instructions: "Close drawer fully; return handle and nearby props to initial positions."
+    safety_notes: "Watch pinch points and excessive pulling force."
+  - id: TASK_FOLD_TOWEL
+    name: Fold towel
+    family: deformable_object
+    description: "Fold a towel along a target axis into a compact final state."
+    success_criteria:
+      - "Opposing edges align within task tolerance."
+      - "Final towel state is visible from overhead or oblique view."
+    failure_criteria:
+      - "Towel bunches, twists, or leaves target fold incomplete."
+      - "Occlusion prevents judging final fold."
+    required_sensor_notes: "Overhead RGB or RGBD view recommended for final shape review."
+    annotation_requirements: "Mark grasp points, lift/fold motion, release, and final state."
+    reset_instructions: "Flatten towel to the documented start pose and orientation."
+    safety_notes: "Avoid dragging fabric across fragile props or sensor cables."
+  - id: TASK_PICK_FROM_CLUTTER
+    name: Pick from clutter
+    family: grasping
+    description: "Pick a specified object from a cluttered tabletop without disturbing distractors beyond tolerance."
+    success_criteria:
+      - "Target object is lifted and separated from clutter."
+      - "Distractor movement stays within allowed threshold."
+    failure_criteria:
+      - "Wrong object is grasped."
+      - "Target is dropped, pushed out of reach, or occluded during decisive contact."
+    required_sensor_notes: "Camera must show target identity, clutter state, and grasp contact."
+    annotation_requirements: "Mark target localization, pregrasp, grasp, lift, disturbance, and retry intervals."
+    reset_instructions: "Restore object identities and clutter layout to the variant card."
+    safety_notes: "Use non-fragile mock objects for tutorial fixtures."
+  - id: TASK_WIPE_SURFACE
+    name: Wipe surface
+    family: contact_rich_manipulation
+    description: "Use an end effector or tool to wipe a marked region of a surface."
+    success_criteria:
+      - "Tool maintains appropriate contact over required coverage area."
+      - "Final marked region meets the task cleanliness proxy."
+    failure_criteria:
+      - "Tool loses contact, misses the target region, or applies unsafe force."
+      - "Coverage cannot be reviewed due to sensor position."
+    required_sensor_notes: "View should show tool contact, target region, and final region state."
+    annotation_requirements: "Mark contact start/end, coverage passes, force issues, and recovery."
+    reset_instructions: "Reapply synthetic marker or replace wipe surface per variant."
+    safety_notes: "Avoid liquids or hazardous materials in mock examples."
+  - id: TASK_PLACE_CUP
+    name: Place cup
+    family: pick_place
+    description: "Move a cup to a target region and leave it upright."
+    success_criteria:
+      - "Cup is released inside target region."
+      - "Cup remains upright after release."
+    failure_criteria:
+      - "Cup tips, lands outside region, or is released while unstable."
+      - "Final state is mislabeled or hidden."
+    required_sensor_notes: "Final-state camera must show cup orientation and target boundary."
+    annotation_requirements: "Mark grasp, transport, placement, release, and final-state verification."
+    reset_instructions: "Return cup to start pose; clear target region."
+    safety_notes: "Use empty, non-breakable mock cups."
+  - id: TASK_PLUG_CABLE
+    name: Plug cable
+    family: insertion
+    description: "Align and insert a cable-like object into a compatible mock socket."
+    success_criteria:
+      - "Connector is aligned and visibly seated in socket."
+      - "No unsafe force or fixture displacement occurs."
+    failure_criteria:
+      - "Connector misses, bends, jams, or socket state is not visible."
+      - "Insertion is completed by an unlabeled intervention."
+    required_sensor_notes: "Close view of connector, socket, and force/contact proxy recommended."
+    annotation_requirements: "Mark alignment, first contact, insertion attempt, retries, and intervention."
+    reset_instructions: "Remove connector and return cable slack to start state."
+    safety_notes: "Use unpowered mock connectors only."
+  - id: TASK_SORT_OBJECTS
+    name: Sort objects
+    family: classification_and_manipulation
+    description: "Move objects into target bins according to a documented attribute."
+    success_criteria:
+      - "Every target object is placed in the correct bin."
+      - "Ambiguous objects are marked for review rather than silently assigned."
+    failure_criteria:
+      - "Object is placed in wrong bin or success label ignores unsorted objects."
+      - "Bin identity or object attribute is not visible."
+    required_sensor_notes: "View must show object identity and final bin state."
+    annotation_requirements: "Mark each pick/place subtask and any ambiguity resolution."
+    reset_instructions: "Restore object set, bin labels, and starting layout."
+    safety_notes: "Avoid sharp or fragile distractors in mock layouts."
+  - id: TASK_RECOVER_DROPPED_ITEM
+    name: Recover dropped item
+    family: recovery
+    description: "Recover an item dropped during manipulation and return to task flow."
+    success_criteria:
+      - "Dropped item is located, regrasped, and task state is restored."
+      - "Recovery boundaries and cause are annotated."
+    failure_criteria:
+      - "Item remains unrecovered or reset state becomes contaminated."
+      - "Recovery is performed but unlabeled."
+    required_sensor_notes: "Camera must cover item after drop and recovery grasp."
+    annotation_requirements: "Mark drop, search/reach, regrasp, and restored-state verification."
+    reset_instructions: "Start item in nominal task pose; record any permitted drop zone."
+    safety_notes: "Use soft objects and ensure recovery path is clear."
+  - id: TASK_HAND_OBJECT_TO_HUMAN
+    name: Hand object to human
+    family: human_interaction
+    description: "Present an object for a controlled handoff to a mock human receiver."
+    success_criteria:
+      - "Object is offered at target pose and released only after receiver-ready signal."
+      - "Proximity, pause, and release are visible and annotated."
+    failure_criteria:
+      - "Robot enters unsafe proximity, drops object, or release timing is ambiguous."
+      - "Human interaction is unlabeled or privacy review is missing for real data."
+    required_sensor_notes: "Sensor coverage must support proximity and release timing review."
+    annotation_requirements: "Mark approach, offer, receiver-ready cue, release, and retreat."
+    reset_instructions: "Return object and receiver marker to starting locations."
+    safety_notes: "Mock examples should use staged non-identifiable receiver proxies."
+  - id: TASK_NAVIGATE_OBSTACLE
+    name: Navigate obstacle
+    family: navigation
+    description: "Move through a documented obstacle layout without contact outside allowed tolerances."
+    success_criteria:
+      - "Agent reaches goal region without forbidden contact."
+      - "Path, obstacle positions, and final state are reviewable."
+    failure_criteria:
+      - "Collision, blocked path, localization loss, or unlabeled manual steering occurs."
+      - "Obstacle layout metadata is missing."
+    required_sensor_notes: "View should show path, obstacles, and goal region; odometry or pose stream recommended."
+    annotation_requirements: "Mark start, obstacle approach, avoidance, recovery, and goal arrival."
+    reset_instructions: "Restore obstacles, starting pose, and goal marker to variant layout."
+    safety_notes: "Use soft, low-mass obstacles in mock physical demos."

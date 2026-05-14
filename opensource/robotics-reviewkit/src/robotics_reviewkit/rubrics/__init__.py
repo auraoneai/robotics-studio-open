@@ -1,0 +1,2 @@
+from .dexterity_anchors import DEXTERITY_ANCHORS, NAVIGATION_ANCHORS, TOOL_USE_ANCHORS
+from .manipulation_anchors import MANIPULATION_ANCHORS

@@ -1,0 +1,19 @@
+{
+  "data_status": "synthetic_mock",
+  "purpose": "Minimal example of failure taxonomy references in a reviewed teleop episode.",
+  "episode_id": "mock-taxonomy-snippet-001",
+  "failure_annotations": [
+    {
+      "taxonomy_id": "FAIL_GRASP_UNSTABLE",
+      "segment_id": "seg_grasp",
+      "severity": "medium",
+      "reviewer_note": "Mock object slipped during lift; no real robot clip exists."
+    },
+    {
+      "taxonomy_id": "FAIL_SENSOR_DESYNC_TASK_IMPACT",
+      "segment_id": "seg_transport",
+      "severity": "high",
+      "reviewer_note": "Synthetic action stream offset would block export-ready review."
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+{"episode_id":"capture-0","timestamp":0.0,"task":"mobile_capture","embodiment":"phone_rig","expected_frames":3,"observed_frames":2,"intervention":false}
+{"episode_id":"capture-0","timestamp":0.033,"intervention":true}
+{"episode_id":"capture-0","timestamp":0.066,"intervention":false}

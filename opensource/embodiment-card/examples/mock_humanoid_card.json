@@ -1,0 +1,13 @@
+{
+  "name": "Mock humanoid balance dataset",
+  "robot": {"type": "humanoid", "morphology": "biped upper-body reaching"},
+  "sensors": [{"name": "torso_imu", "type": "imu", "rate_hz": 100}],
+  "action_space": {"type": "joint_position", "dimensions": 22},
+  "coordinate_frames": [{"name": "pelvis", "parent": "world", "description": "Root body frame"}],
+  "control_rate_hz": 50,
+  "teleop_method": "motion capture retargeting",
+  "environment": {"workspace": "lab mat", "support": "overhead harness"},
+  "safety_boundaries": ["Harness attached", "No free-walking claims"],
+  "limitations": ["Upper-body reaching only"]
+}
+

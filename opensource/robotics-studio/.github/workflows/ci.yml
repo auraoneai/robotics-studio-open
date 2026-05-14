@@ -1,0 +1,34 @@
+name: Robotics Studio Open CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  app-and-engine:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pnpm install --ignore-workspace --dir opensource/robotics-studio
+      - run: pnpm --dir opensource/robotics-studio smoke
+      - run: cargo test --manifest-path opensource/robotics-studio/src-tauri/Cargo.toml
+      - run: python -m pytest opensource/robostudio-engine/tests
+      - run: node opensource/open-studio-platform/scripts/verify-platform-contracts.mjs
+
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: christophebedard/dco-check@0.5.0

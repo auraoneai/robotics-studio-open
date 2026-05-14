@@ -1,0 +1,26 @@
+name: LeRobot Quality Gates
+description: Check LeRobot-style robotics datasets for training-readiness issues.
+author: AuraOne
+branding:
+  icon: check-circle
+  color: green
+inputs:
+  path:
+    description: Dataset path.
+    required: false
+    default: "."
+  fail-on:
+    description: Severity threshold that fails the action.
+    required: false
+    default: "high"
+  format:
+    description: "Report format: markdown, json, hf-card, or badge."
+    required: false
+    default: "markdown"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        python -m pip install "${{ github.action_path }}"
+        lerobot-quality-gates check "${{ inputs.path }}" --fail-on "${{ inputs.fail-on }}" --format "${{ inputs.format }}"

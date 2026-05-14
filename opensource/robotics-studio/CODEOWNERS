@@ -1,0 +1,5 @@
+* @auraoneai/open-studio-platform @auraoneai/robotics-open-source
+/src-tauri/ @auraoneai/open-studio-platform
+/src/ @auraoneai/robotics-open-source
+/docs/ @auraoneai/developer-content
+/release/ @auraoneai/security

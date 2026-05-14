@@ -1,0 +1,2 @@
+{"id":"robot_missing_coordinate_frame","domain":"robotics","title":"Dataset card omits coordinate frames","description":"A synthetic robot dataset describes cameras and actions but omits frame definitions.","review_label":"embodiment-metadata-gap","expected_finding":"schema validation catches missing coordinate_frames","related_tool":"embodiment-card","reproduce_command":"embodiment-card validate examples/mock_so101_card.json","synthetic":true}
+

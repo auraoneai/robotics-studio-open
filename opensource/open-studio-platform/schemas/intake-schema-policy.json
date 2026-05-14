@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.auraone.ai/open-studio/intake-schema-policy/v1.json",
+  "current_major": 1,
+  "accepted_major_versions": [1],
+  "cloud_acceptance_rule": "last_three_schema_majors",
+  "breaking_change_deprecation_months": 18,
+  "minor_change_policy": "additive_roles_only",
+  "schema_urls": {
+    "v1": "https://schemas.auraone.ai/open-studio/intake-packet/v1.json",
+    "roles_v1_2": "https://schemas.auraone.ai/open-studio/intake-roles/v1.2.json"
+  }
+}

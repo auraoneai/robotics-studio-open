@@ -7,6 +7,25 @@ repository for GA without shipping placeholder product behavior.
 Current release status is tracked in
 `docs/release/release-readiness-2026-05-13.md`.
 
+## Source Layout
+
+- `opensource/robotics-studio`: Vite/React web shell plus Tauri desktop shell.
+- `opensource/robostudio-engine`: Python dataset adapters, indexing, QA,
+  clustering, exports, and the `robostudio` CLI.
+- `opensource/open-studio-platform/packages`: local shared UI and platform
+  contracts used by the Studio source build.
+
+## Build From Source
+
+```bash
+pnpm install
+pnpm --dir opensource/robotics-studio build
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=opensource/robostudio-engine/src:opensource/robotics-reviewkit/src:opensource/lerobot-quality-gates/src:opensource/robot-recovery-bench/src:opensource/vla-robustness-kit/src:opensource/embodiment-card/src:opensource/failure-gallery/src \
+  python -m pytest -q opensource/robostudio-engine/tests
+python -m build opensource/robostudio-engine
+```
+
 ## Distribution
 
 - macOS: signed and notarized DMG, Homebrew Cask `robotics-studio-open`.

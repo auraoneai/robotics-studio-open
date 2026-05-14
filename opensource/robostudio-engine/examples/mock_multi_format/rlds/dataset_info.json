@@ -1,0 +1,7 @@
+{
+  "builder_name": "mock_rlds",
+  "features": {
+    "observation.image": {"dtype": "video", "shape": [64, 64, 3]},
+    "action": {"dtype": "float32", "shape": [7]}
+  }
+}

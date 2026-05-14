@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Embodiment Card v1",
+  "type": "object",
+  "required": ["name", "robot", "sensors", "action_space", "coordinate_frames", "control_rate_hz", "teleop_method", "environment", "safety_boundaries", "limitations"],
+  "properties": {
+    "name": {"type": "string"},
+    "robot": {"type": "object"},
+    "sensors": {"type": "array", "items": {"type": "object"}},
+    "action_space": {"type": "object"},
+    "coordinate_frames": {"type": "array", "items": {"type": "object"}},
+    "control_rate_hz": {"type": "number"},
+    "teleop_method": {"type": "string"},
+    "environment": {"type": "object"},
+    "safety_boundaries": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
+

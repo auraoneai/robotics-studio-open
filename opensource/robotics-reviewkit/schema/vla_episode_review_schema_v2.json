@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VLA Episode Review Schema v2",
+  "type": "object",
+  "required": [
+    "episode_id",
+    "task",
+    "review_version",
+    "rubric_anchors",
+    "event_stream",
+    "synthetic"
+  ],
+  "properties": {
+    "episode_id": {
+      "type": "string"
+    },
+    "task": {
+      "type": "string"
+    },
+    "review_version": {
+      "const": "v2"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "rubric_anchors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "event_stream": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "timestamp_s",
+          "label"
+        ],
+        "properties": {
+          "timestamp_s": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "success",
+              "contact",
+              "safety",
+              "drift",
+              "recovery",
+              "intervention"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

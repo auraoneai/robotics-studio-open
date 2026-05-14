@@ -1,0 +1,67 @@
+{
+  "episode_id": "mock-episode-001",
+  "data_source": "mock",
+  "disclosure": "Mock robotics metadata for viewer/export demos; not real robot data.",
+  "task": {
+    "task_id": "task-01",
+    "name": "Pick mug",
+    "environment": "synthetic kitchen counter"
+  },
+  "duration_s": 42.0,
+  "segments": [
+    {
+      "segment_id": "seg-1",
+      "start_s": 0,
+      "end_s": 12,
+      "label": "approach"
+    },
+    {
+      "segment_id": "seg-2",
+      "start_s": 12,
+      "end_s": 28,
+      "label": "grasp_attempt"
+    },
+    {
+      "segment_id": "seg-3",
+      "start_s": 28,
+      "end_s": 42,
+      "label": "place"
+    }
+  ],
+  "failure_modes": [
+    {
+      "failure_id": "fail-1",
+      "taxonomy_id": "contact.slip",
+      "time_s": 24.4,
+      "severity": "medium",
+      "note": "Mock slip after first grasp."
+    }
+  ],
+  "interventions": [
+    {
+      "intervention_id": "int-1",
+      "type": "human_takeover",
+      "start_s": 24.0,
+      "end_s": 27.5,
+      "reason": "recover object slip",
+      "linked_failure_mode": "fail-1"
+    }
+  ],
+  "sensor_qa": [
+    {
+      "sensor": "wrist_rgb",
+      "status": "pass",
+      "notes": "mock frames complete"
+    },
+    {
+      "sensor": "front_rgb",
+      "status": "warning",
+      "notes": "brief occlusion at 20s"
+    },
+    {
+      "sensor": "joint_state",
+      "status": "pass",
+      "notes": "mock timestamps aligned"
+    }
+  ]
+}

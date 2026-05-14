@@ -1,0 +1,36 @@
+{
+  "episodes": [
+    {
+      "episode_id": 0,
+      "task": "mock_pick",
+      "frames": 3,
+      "start_time": 0.0,
+      "end_time": 0.1,
+      "data_path": "data/episode_000.json",
+      "video_paths": {
+        "observation.images.front": "videos/front_000.mp4"
+      },
+      "timestamps": [0.0, 0.033, 0.066],
+      "interventions": [
+        {
+          "type": "human_correction",
+          "reason": "gripper_slip",
+          "start_time": 0.033,
+          "end_time": 0.066
+        }
+      ],
+      "success": true
+    },
+    {
+      "episode_id": 1,
+      "task": "mock_pick",
+      "frames": 3,
+      "start_time": 0.0,
+      "end_time": 0.1,
+      "data_path": "data/episode_001.json",
+      "timestamps": [0.0, 0.033, 0.066],
+      "success": false,
+      "failure_modes": ["manipulation:grasp:slip"]
+    }
+  ]
+}

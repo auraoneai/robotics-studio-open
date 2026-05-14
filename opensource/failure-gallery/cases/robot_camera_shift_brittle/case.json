@@ -1,0 +1,2 @@
+{"id":"robot_camera_shift_brittle","domain":"robotics","title":"Camera shift causes VLA failure cluster","description":"A synthetic episode set shows brittleness when camera pose metadata changes.","review_label":"vision-robustness","expected_finding":"camera_shift appears as a repeated failure cluster","related_tool":"vla-robustness-kit","reproduce_command":"vla-robustness-kit run examples/mock_episode_set --policy mock --out report.md","synthetic":true}
+

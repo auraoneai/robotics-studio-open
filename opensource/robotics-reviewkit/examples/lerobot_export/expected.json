@@ -1,0 +1,4 @@
+{
+  "format": "lerobot-metadata-bridge-v0.1",
+  "disclosure": "Metadata bridge from mock Teleop Review Schema; not full LeRobot tensor/video dataset."
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "robotics-failure-taxonomy-v0.1",
+  "disclosure": "Mock taxonomy for review workflows; not a real robotics dataset.",
+  "failure_modes": [
+    {
+      "id": "contact.missed_grasp",
+      "label": "Missed grasp",
+      "category": "contact",
+      "description": "End effector fails to establish stable contact."
+    },
+    {
+      "id": "contact.slip",
+      "label": "Object slip",
+      "category": "contact",
+      "description": "Object leaves grasp after contact."
+    },
+    {
+      "id": "planning.dead_end",
+      "label": "Planner dead end",
+      "category": "planning",
+      "description": "Policy reaches state requiring intervention."
+    },
+    {
+      "id": "sensor.occlusion",
+      "label": "Sensor occlusion",
+      "category": "sensor",
+      "description": "Critical camera view is blocked."
+    },
+    {
+      "id": "timing.latency",
+      "label": "Control latency",
+      "category": "timing",
+      "description": "Action arrives too late for task state."
+    }
+  ]
+}

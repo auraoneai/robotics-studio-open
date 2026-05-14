@@ -1,0 +1,35 @@
+{
+  "name": "robotics-studio-open",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Robotics Studio Open local-first desktop review IDE.",
+  "type": "module",
+  "scripts": {
+    "prebuild": "pnpm run platform:build",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "pretypecheck": "pnpm run platform:build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "pretest": "pnpm run platform:build",
+    "test": "tsx tests/studio-smoke.test.ts && tsx tests/platform-inheritance.test.ts && tsx tests/accessibility-smoke.test.ts",
+    "smoke": "pnpm run typecheck && pnpm run test",
+    "rust:test": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "platform:build": "pnpm --dir ../open-studio-platform/packages/platform-contracts build && pnpm --dir ../open-studio-platform/packages/aura-ide-kit build"
+  },
+  "dependencies": {
+    "@auraone/aura-ide-kit": "file:../open-studio-platform/packages/aura-ide-kit",
+    "@auraone/platform-contracts": "file:../open-studio-platform/packages/platform-contracts",
+    "@tauri-apps/api": "^2.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "lucide-react": "^0.554.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vite": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.7.2"
+  }
+}

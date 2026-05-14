@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AuraOne Robotics ReviewKit Viewer</title>
+    <link rel="stylesheet" href="./reviewkit-viewer.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">AuraOne Robotics ReviewKit</p>
+        <h1>Teleop Failure Review</h1>
+      </div>
+      <label class="file-control">
+        <span>Load JSON</span>
+        <input id="episode-file" type="file" accept="application/json,.json" />
+      </label>
+    </header>
+
+    <main class="shell">
+      <section class="notice" id="data-notice">
+        Loading synthetic mock episode. No data is uploaded.
+      </section>
+
+      <section class="summary-grid" aria-label="Episode summary">
+        <article><span>Episode</span><strong id="episode-id">-</strong></article>
+        <article><span>Task</span><strong id="task-name">-</strong></article>
+        <article><span>Review</span><strong id="review-stage">-</strong></article>
+        <article><span>Readiness</span><strong id="training-readiness">-</strong></article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Timeline</h2>
+          <p id="duration-label">-</p>
+        </div>
+        <div class="timeline" id="timeline" aria-label="Episode timeline"></div>
+        <div class="legend">
+          <span><i class="segment-dot"></i> segment</span>
+          <span><i class="failure-dot"></i> failure</span>
+          <span><i class="intervention-dot"></i> intervention</span>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <section class="panel"><h2>Failures</h2><div id="failures" class="list"></div></section>
+        <section class="panel"><h2>Interventions</h2><div id="interventions" class="list"></div></section>
+      </section>
+
+      <section class="content-grid">
+        <section class="panel"><h2>Sensor QA</h2><div id="sensor-qa" class="list"></div></section>
+        <section class="panel"><h2>Sensors</h2><div id="sensors" class="list"></div></section>
+      </section>
+
+      <section class="panel">
+        <h2>Reviewer Notes</h2>
+        <p id="reviewer-notes" class="notes"></p>
+      </section>
+
+      <section class="error" id="error-box" hidden></section>
+    </main>
+
+    <script src="./reviewkit-viewer.js"></script>
+  </body>
+</html>

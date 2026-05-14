@@ -1,0 +1,90 @@
+{
+  "compatibility": "metadata_only",
+  "dataset": {
+    "episode_count": 1,
+    "generated_by": "auraone-robotics-reviewkit",
+    "mock_data": true,
+    "name": "auraone_mock_openx_metadata"
+  },
+  "episodes": [
+    {
+      "assets": {
+        "actions": null,
+        "note": "No training payload assets are emitted by this metadata export.",
+        "observations": null,
+        "videos": null
+      },
+      "duration_seconds": 12.5,
+      "episode_id": "mock_episode_0001",
+      "episode_index": 0,
+      "metadata_only": true,
+      "review_metadata": {
+        "failure_modes": [
+          {
+            "failure_id": "fm_contact_near_miss",
+            "severity": "medium",
+            "taxonomy_id": "contact.near_miss"
+          }
+        ],
+        "interventions": [
+          {
+            "intervention_id": "int_pause_001",
+            "reason": "operator paused before mock obstacle",
+            "timestamp_seconds": 8.4,
+            "type": "pause"
+          }
+        ],
+        "review": {
+          "reviewer_notes": "Synthetic tutorial metadata only. No real robot clip is attached.",
+          "training_readiness": {
+            "reason": "Mock tutorial episode has complete review metadata.",
+            "state": "ready"
+          }
+        },
+        "segments": [
+          {
+            "end_seconds": 5.0,
+            "label": "approach",
+            "segment_id": "seg_approach",
+            "start_seconds": 0.0
+          },
+          {
+            "end_seconds": 12.5,
+            "label": "place",
+            "segment_id": "seg_place",
+            "start_seconds": 5.0
+          }
+        ],
+        "sensor_qa": {
+          "camera_front": {
+            "status": "usable"
+          },
+          "joint_state": {
+            "status": "metadata_only"
+          }
+        },
+        "training_readiness_state": "ready"
+      },
+      "robot": {
+        "embodiment_id": "mock_mobile_manipulator_v0",
+        "embodiment_name": "Mock Mobile Manipulator"
+      },
+      "sensors": [
+        "camera_front",
+        "joint_state"
+      ],
+      "split": "train",
+      "task": {
+        "id": "mock_pick_place",
+        "name": "Mock Pick And Place"
+      }
+    }
+  ],
+  "export_type": "openx_metadata_bridge",
+  "format": "OpenX-style manifest JSON",
+  "limitations": [
+    "Exports OpenX-style manifest JSON metadata only.",
+    "Does not generate Open X-Embodiment tensor payloads, TFDS features, images, videos, or action arrays.",
+    "Mock examples are tutorial data and are not human-validated training datasets."
+  ]
+}

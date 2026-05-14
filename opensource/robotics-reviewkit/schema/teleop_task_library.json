@@ -1,0 +1,146 @@
+{
+  "schema_version": "teleop-task-library-v0.1",
+  "disclosure": "Synthetic task specs for review planning, not training data.",
+  "tasks": [
+    {
+      "task_id": "task-01",
+      "name": "Pick mug",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-02",
+      "name": "Open drawer",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-03",
+      "name": "Fold towel",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-04",
+      "name": "Place block",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-05",
+      "name": "Close cabinet",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-06",
+      "name": "Wipe table",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-07",
+      "name": "Insert plug",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-08",
+      "name": "Sort object",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-09",
+      "name": "Press button",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    },
+    {
+      "task_id": "task-10",
+      "name": "Hand off item",
+      "required_sensors": [
+        "wrist_rgb",
+        "front_rgb",
+        "joint_state"
+      ],
+      "review_focus": [
+        "segments",
+        "interventions",
+        "failure_modes"
+      ]
+    }
+  ]
+}

@@ -53,12 +53,20 @@ jobs:
         shell: bash
         run: |
           if [ -f package.json ]; then pnpm install --frozen-lockfile; fi
+      - name: Robotics Studio web smoke
+        shell: bash
+        run: |
+          if [ -f opensource/robotics-studio/package.json ]; then
+            pnpm --dir opensource/robotics-studio typecheck
+            pnpm --dir opensource/robotics-studio test
+          fi
       - name: Python package smoke when present
         shell: bash
         run: |
-          if [ -f pyproject.toml ]; then
+          if [ -f opensource/robostudio-engine/pyproject.toml ]; then
             python -m pip install --upgrade pip build
-            python -m build
+            PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=opensource/robostudio-engine/src:opensource/robotics-reviewkit/src:opensource/lerobot-quality-gates/src:opensource/robot-recovery-bench/src:opensource/vla-robustness-kit/src:opensource/embodiment-card/src:opensource/failure-gallery/src python -m pytest -q opensource/robostudio-engine/tests
+            python -m build opensource/robostudio-engine
           fi
       - name: Release ops manifest check
         shell: bash

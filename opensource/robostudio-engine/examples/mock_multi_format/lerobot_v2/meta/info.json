@@ -1,0 +1,8 @@
+{
+  "fps": 15,
+  "robot_type": "mock_aloha",
+  "features": {
+    "observation.images.front": {"dtype": "video", "shape": [240, 320, 3]},
+    "action": {"dtype": "float32", "shape": [14]}
+  }
+}

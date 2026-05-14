@@ -1,0 +1,128 @@
+{
+  "compatibility": "metadata_only",
+  "dataset_info": {
+    "episode_count": 1,
+    "generated_by": "auraone-robotics-reviewkit",
+    "mock_data": true,
+    "name": "auraone_mock_rlds_metadata",
+    "task_names": [
+      "Mock Pick And Place"
+    ]
+  },
+  "episodes": [
+    {
+      "episode_id": "mock_episode_0001",
+      "episode_index": 0,
+      "episode_metadata": {
+        "duration_seconds": 12.5,
+        "embodiment": {
+          "id": "mock_mobile_manipulator_v0",
+          "name": "Mock Mobile Manipulator"
+        },
+        "failure_modes": [
+          {
+            "failure_id": "fm_contact_near_miss",
+            "severity": "medium",
+            "taxonomy_id": "contact.near_miss"
+          }
+        ],
+        "interventions": [
+          {
+            "intervention_id": "int_pause_001",
+            "reason": "operator paused before mock obstacle",
+            "timestamp_seconds": 8.4,
+            "type": "pause"
+          }
+        ],
+        "mock_data": true,
+        "review": {
+          "reviewer_notes": "Synthetic tutorial metadata only. No real robot clip is attached.",
+          "training_readiness": {
+            "reason": "Mock tutorial episode has complete review metadata.",
+            "state": "ready"
+          }
+        },
+        "sensor_qa": {
+          "camera_front": {
+            "status": "usable"
+          },
+          "joint_state": {
+            "status": "metadata_only"
+          }
+        },
+        "task": {
+          "id": "mock_pick_place",
+          "name": "Mock Pick And Place"
+        },
+        "training_readiness_state": "ready",
+        "training_ready": true
+      },
+      "metadata_only": true,
+      "steps": [
+        {
+          "action": {
+            "note": "No teleop action tensor is emitted by this metadata export.",
+            "placeholder": true
+          },
+          "discount": null,
+          "is_first": true,
+          "is_last": false,
+          "is_terminal": false,
+          "metadata": {
+            "segment": {
+              "end_seconds": 5.0,
+              "label": "approach",
+              "segment_id": "seg_approach",
+              "start_seconds": 0.0
+            },
+            "segment_id": "seg_approach"
+          },
+          "observation": {
+            "placeholder": true,
+            "sensor_metadata": [
+              "camera_front",
+              "joint_state"
+            ]
+          },
+          "reward": null,
+          "step_index": 0
+        },
+        {
+          "action": {
+            "note": "No teleop action tensor is emitted by this metadata export.",
+            "placeholder": true
+          },
+          "discount": null,
+          "is_first": false,
+          "is_last": true,
+          "is_terminal": true,
+          "metadata": {
+            "segment": {
+              "end_seconds": 12.5,
+              "label": "place",
+              "segment_id": "seg_place",
+              "start_seconds": 5.0
+            },
+            "segment_id": "seg_place"
+          },
+          "observation": {
+            "placeholder": true,
+            "sensor_metadata": [
+              "camera_front",
+              "joint_state"
+            ]
+          },
+          "reward": null,
+          "step_index": 1
+        }
+      ]
+    }
+  ],
+  "export_type": "rlds_metadata_bridge",
+  "format": "RLDS-style metadata JSON",
+  "limitations": [
+    "Exports RLDS-style JSON metadata only.",
+    "Does not generate tf.train.Example records, TFDS builders, tensors, images, videos, or action arrays.",
+    "Mock examples are tutorial data and are not human-validated training datasets."
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "episode_id": "synthetic-vla-001",
+  "task": "dexterity",
+  "review_version": "v2",
+  "synthetic": true,
+  "duration_seconds": 120,
+  "rubric_anchors": [
+    {
+      "criterion_id": "grasp_alignment",
+      "score": 2,
+      "label": "stable grasp alignment"
+    }
+  ],
+  "event_stream": [
+    {
+      "timestamp_s": 0,
+      "label": "contact",
+      "severity": "info",
+      "notes": "Synthetic gripper contact begins."
+    },
+    {
+      "timestamp_s": 30,
+      "label": "intervention",
+      "severity": "warning",
+      "notes": "Synthetic operator re-centers the mock object."
+    },
+    {
+      "timestamp_s": 45,
+      "label": "recovery",
+      "severity": "info",
+      "notes": "Synthetic task flow returns to nominal motion."
+    },
+    {
+      "timestamp_s": 90,
+      "label": "success",
+      "severity": "info",
+      "notes": "Synthetic final state satisfies the rubric anchor."
+    }
+  ],
+  "steps": [
+    {
+      "frame_index": 0,
+      "timestamp_s": 0,
+      "observation": {
+        "placeholder": true,
+        "description": "Synthetic image metadata only."
+      },
+      "action": {
+        "placeholder": true,
+        "description": "Synthetic action metadata only."
+      }
+    },
+    {
+      "frame_index": 1,
+      "timestamp_s": 45,
+      "observation": {
+        "placeholder": true,
+        "description": "Synthetic recovery frame metadata only."
+      },
+      "action": {
+        "placeholder": true,
+        "description": "Synthetic recovery action metadata only."
+      }
+    },
+    {
+      "frame_index": 2,
+      "timestamp_s": 90,
+      "observation": {
+        "placeholder": true,
+        "description": "Synthetic final-state metadata only."
+      },
+      "action": {
+        "placeholder": true,
+        "description": "Synthetic final placement metadata only."
+      }
+    }
+  ]
+}

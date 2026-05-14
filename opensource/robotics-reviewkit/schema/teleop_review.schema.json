@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuraOne Teleop Review Episode",
+  "type": "object",
+  "required": [
+    "episode_id",
+    "data_source",
+    "task",
+    "segments",
+    "interventions",
+    "sensor_qa"
+  ],
+  "properties": {
+    "episode_id": {
+      "type": "string"
+    },
+    "data_source": {
+      "enum": [
+        "mock",
+        "synthetic_tutorial",
+        "customer_permissioned"
+      ]
+    },
+    "task": {
+      "type": "object"
+    },
+    "segments": {
+      "type": "array"
+    },
+    "interventions": {
+      "type": "array"
+    },
+    "sensor_qa": {
+      "type": "array"
+    },
+    "failure_modes": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

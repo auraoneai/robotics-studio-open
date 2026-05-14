@@ -1,0 +1,50 @@
+{
+  "episodes": [
+    {
+      "episode_id": 0,
+      "task": "mock_block_place",
+      "frames": 3,
+      "start_time": 0.0,
+      "end_time": 0.1,
+      "data_path": "data/chunk-000/episode_000.json",
+      "video_paths": {
+        "observation.images.front": "videos/chunk-000/observation.images.front/episode_000.mp4"
+      },
+      "action_shape": [6],
+      "state_shape": [6],
+      "timestamps": [0.0, 0.033, 0.066],
+      "interventions": [
+        {
+          "type": "human_correction",
+          "start_time": 0.033,
+          "end_time": 0.066,
+          "reason": "mock_gripper_misalignment",
+          "recovery_success": true
+        }
+      ]
+    },
+    {
+      "episode_id": 1,
+      "task": "mock_block_place",
+      "frames": 3,
+      "start_time": 0.0,
+      "end_time": 0.1,
+      "data_path": "data/chunk-000/episode_001.json",
+      "video_paths": {
+        "observation.images.front": "videos/chunk-000/observation.images.front/episode_001.mp4"
+      },
+      "action_shape": [6],
+      "state_shape": [6],
+      "timestamps": [0.0, 0.034, 0.067],
+      "interventions": [
+        {
+          "type": "none",
+          "start_time": 0.0,
+          "end_time": 0.0,
+          "reason": "no_intervention_needed",
+          "recovery_success": true
+        }
+      ]
+    }
+  ]
+}

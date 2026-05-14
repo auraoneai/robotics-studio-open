@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auraone.ai/schemas/recovery-segment-v1.json",
+  "title": "Robot Recovery Segment v1",
+  "type": "object",
+  "required": ["episode_id", "task", "failure_reason", "intervention_type", "start_time", "intervention_time", "end_time", "recovery_success"],
+  "properties": {
+    "episode_id": {"type": "string"},
+    "task": {"type": "string"},
+    "failure_reason": {"type": "string"},
+    "intervention_type": {"type": "string"},
+    "start_time": {"type": "number"},
+    "intervention_time": {"type": "number"},
+    "end_time": {"type": "number"},
+    "recovery_success": {"type": "boolean"},
+    "operator_action": {"type": "string"},
+    "training_ready": {"type": "boolean"}
+  }
+}

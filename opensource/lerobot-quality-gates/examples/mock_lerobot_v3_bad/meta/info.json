@@ -1,0 +1,16 @@
+{
+  "fps": 0,
+  "robot_type": "mock_arm",
+  "total_episodes": 3,
+  "hil": true,
+  "features": {
+    "observation.images.front": {
+      "dtype": "video",
+      "shape": [480, 640, 3]
+    },
+    "action": {
+      "dtype": "float32",
+      "shape": [6]
+    }
+  }
+}

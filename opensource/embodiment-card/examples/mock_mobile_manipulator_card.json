@@ -1,0 +1,13 @@
+{
+  "name": "Mock mobile manipulator household dataset",
+  "robot": {"type": "mobile_manipulator", "morphology": "wheeled base plus 7-dof arm"},
+  "sensors": [{"name": "head_rgbd", "type": "rgbd", "rate_hz": 15}],
+  "action_space": {"type": "base_velocity_plus_ee_delta", "dimensions": 10},
+  "coordinate_frames": [{"name": "base_link", "parent": "map", "description": "Mobile base frame"}],
+  "control_rate_hz": 20,
+  "teleop_method": "joystick plus cartesian arm control",
+  "environment": {"workspace": "mock apartment", "floor": "flat indoor"},
+  "safety_boundaries": ["No stairs", "No glass objects"],
+  "limitations": ["Indoor flat-floor scenes only"]
+}
+

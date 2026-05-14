@@ -1,0 +1,73 @@
+{
+  "embodiment": {
+    "id": "mock_mobile_manipulator_v0",
+    "name": "Mock Mobile Manipulator"
+  },
+  "episode_id": "mock_episode_0001",
+  "failure_modes": [
+    {
+      "failure_id": "fm_contact_near_miss",
+      "severity": "medium",
+      "taxonomy_id": "contact.near_miss"
+    }
+  ],
+  "interventions": [
+    {
+      "intervention_id": "int_pause_001",
+      "reason": "operator paused before mock obstacle",
+      "timestamp_seconds": 8.4,
+      "type": "pause"
+    }
+  ],
+  "mock_data": true,
+  "review": {
+    "reviewer_notes": "Synthetic tutorial metadata only. No real robot clip is attached.",
+    "training_readiness": {
+      "reason": "Mock tutorial episode has complete review metadata.",
+      "state": "ready"
+    }
+  },
+  "schema": "teleop_review_schema",
+  "schema_version": "0.1.0-mock",
+  "segments": [
+    {
+      "end_seconds": 5.0,
+      "label": "approach",
+      "segment_id": "seg_approach",
+      "start_seconds": 0.0
+    },
+    {
+      "end_seconds": 12.5,
+      "label": "place",
+      "segment_id": "seg_place",
+      "start_seconds": 5.0
+    }
+  ],
+  "sensor_qa": {
+    "camera_front": {
+      "status": "usable"
+    },
+    "joint_state": {
+      "status": "metadata_only"
+    }
+  },
+  "sensors": [
+    {
+      "id": "camera_front",
+      "type": "rgb"
+    },
+    {
+      "id": "joint_state",
+      "type": "proprioception"
+    }
+  ],
+  "task": {
+    "id": "mock_pick_place",
+    "name": "Mock Pick And Place"
+  },
+  "training_readiness": {
+    "reason": "Mock tutorial episode has complete review metadata.",
+    "state": "ready"
+  },
+  "duration_seconds": 12.5
+}

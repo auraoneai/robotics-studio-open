@@ -1,0 +1,2 @@
+{"id":"otel_trace_privacy_leak","domain":"agent","title":"Trace export contains email and bearer token","description":"A synthetic GenAI trace includes sensitive values in prompt attributes.","review_label":"trace-redaction","expected_finding":"eval case extraction redacts email and bearer token before export","related_tool":"otel-eval-bridge","reproduce_command":"otel-eval-bridge extract examples/genai_trace.json --out eval_cases.jsonl","synthetic":true}
+

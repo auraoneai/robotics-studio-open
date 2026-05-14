@@ -1,0 +1,20 @@
+{
+  "data_status": "synthetic_mock",
+  "purpose": "Synthetic intervention examples mapped to the public ontology.",
+  "interventions": [
+    {
+      "ontology_id": "INT_GRASP_RETRY",
+      "segment_id": "seg_grasp",
+      "trigger": "Mock gripper slipped after initial contact.",
+      "operator_action": "Opened gripper, shifted approach, and retried closure.",
+      "training_relevance": "include_as_recovery"
+    },
+    {
+      "ontology_id": "INT_UNSAFE_MOTION_STOP",
+      "segment_id": "seg_handoff",
+      "trigger": "Mock trajectory crossed a proximity boundary.",
+      "operator_action": "Stopped motion and returned to a neutral pose.",
+      "training_relevance": "exclude_segment"
+    }
+  ]
+}

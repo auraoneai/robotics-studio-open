@@ -1,0 +1,2 @@
+{"id":"agent_trace_missing_decision","domain":"agent","title":"Trace lacks decision rationale for escalation","description":"A synthetic support trace escalates without a durable decision record.","review_label":"trace-card-gap","expected_finding":"trace card missing decision rationale and escalation evidence","related_tool":"agent-trace-card","reproduce_command":"agent-trace-card generate examples/support_trace.json --out card.md","synthetic":true}
+

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Robotics Studio Open",
+  "version": "0.1.0",
+  "identifier": "ai.auraone.roboticsstudio",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Robotics Studio Open",
+        "width": 1440,
+        "height": 960,
+        "minWidth": 1120,
+        "minHeight": 760
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://updates.auraone.ai https://updates2.auraone.ai https://intake.auraone.ai https://o.auraone.ai https://sentry.io; frame-src 'none'; object-src 'none'; base-uri 'self'",
+      "capabilities": ["default"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "Copyright AuraOne",
+    "shortDescription": "Local-first robot dataset review IDE.",
+    "longDescription": "Robotics Studio Open opens, reviews, probes, validates, and exports robot datasets without adding hosted multi-user state.",
+    "targets": ["dmg", "appimage", "deb", "rpm", "msi"],
+    "externalBin": []
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["auraone"]
+      }
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://updates.auraone.ai/robotics-studio-open/{{target}}/{{arch}}/{{current_version}}",
+        "https://updates2.auraone.ai/robotics-studio-open/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "pubkey": "PLATFORM_SHARED_SIGNING_KEY_CONFIGURED_IN_RELEASE_CI"
+    }
+  }
+}

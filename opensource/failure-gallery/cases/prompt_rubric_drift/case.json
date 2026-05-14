@@ -1,0 +1,2 @@
+{"id":"prompt_rubric_drift","domain":"agent","title":"Prompt and rubric drift changes scoring boundaries","description":"A synthetic PR removes evidence criteria while tightening factuality language.","review_label":"rubric-drift","expected_finding":"rubric weights changed and evidence criterion was removed","related_tool":"prompt-rubric-drift","reproduce_command":"prompt-rubric-drift compare examples/before examples/after --out report.md","synthetic":true}
+

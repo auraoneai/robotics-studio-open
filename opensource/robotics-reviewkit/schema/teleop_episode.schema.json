@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auraone.ai/open/schemas/robotics-reviewkit/teleop_episode.schema.json",
+  "title": "AuraOne Robotics ReviewKit Teleop Episode",
+  "description": "Reviewed teleoperation episode metadata for synthetic, mock, tutorial, or permissioned real robotics data. The bundled examples are synthetic mock data only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "data_status",
+    "episode_id",
+    "task",
+    "embodiment",
+    "timestamps",
+    "sensors",
+    "segments",
+    "interventions",
+    "failure_annotations",
+    "sensor_qa",
+    "review",
+    "training_readiness",
+    "privacy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "data_status": {
+      "type": "string",
+      "enum": ["synthetic_mock", "permissioned_real"]
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:-]{2,127}$"
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "name", "variant", "success_label", "environment_id"],
+      "properties": {
+        "task_id": { "type": "string", "pattern": "^TASK_[A-Z0-9_]+$" },
+        "name": { "type": "string", "minLength": 3 },
+        "variant": { "type": "string", "minLength": 2 },
+        "success_label": { "type": "string", "enum": ["success", "partial_success", "failure", "unknown"] },
+        "environment_id": { "type": "string", "minLength": 3 },
+        "reset_state_id": { "type": "string", "minLength": 3 },
+        "instruction": { "type": "string", "minLength": 3 }
+      }
+    },
+    "embodiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "hardware_profile", "end_effectors", "mobility"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["single_arm", "dual_arm", "mobile_manipulator", "humanoid", "simulated_agent", "other"] },
+        "hardware_profile": { "type": "string", "minLength": 3 },
+        "end_effectors": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "mobility": { "type": "string", "enum": ["fixed_base", "wheeled", "legged", "aerial", "simulated", "other"] }
+      }
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_s", "end_s", "clock_source"],
+      "properties": {
+        "start_s": { "type": "number", "minimum": 0 },
+        "end_s": { "type": "number", "exclusiveMinimum": 0 },
+        "clock_source": { "type": "string", "minLength": 3 }
+      }
+    },
+    "sensors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sensor_id", "modality", "frame_rate_hz", "sync_group", "calibration_status"],
+        "properties": {
+          "sensor_id": { "type": "string", "pattern": "^[a-zA-Z0-9_.:-]+$" },
+          "modality": { "type": "string", "enum": ["rgb", "depth", "rgbd", "imu", "joint_state", "force_torque", "audio", "tactile", "action", "other"] },
+          "frame_rate_hz": { "type": "number", "exclusiveMinimum": 0 },
+          "sync_group": { "type": "string", "minLength": 1 },
+          "calibration_status": { "type": "string", "enum": ["calibrated", "estimated", "stale", "missing", "not_applicable"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["segment_id", "start_s", "end_s", "phase", "description"],
+        "properties": {
+          "segment_id": { "type": "string", "pattern": "^seg_[a-zA-Z0-9_-]+$" },
+          "start_s": { "type": "number", "minimum": 0 },
+          "end_s": { "type": "number", "exclusiveMinimum": 0 },
+          "phase": { "type": "string", "enum": ["approach", "pregrasp", "grasp", "manipulate", "navigate", "handoff", "recover", "reset", "observe", "other"] },
+          "description": { "type": "string", "minLength": 3 }
+        }
+      }
+    },
+    "interventions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["intervention_id", "ontology_id", "start_s", "end_s", "segment_id", "trigger", "operator_action"],
+        "properties": {
+          "intervention_id": { "type": "string", "pattern": "^int_[a-zA-Z0-9_-]+$" },
+          "ontology_id": { "type": "string", "pattern": "^INT_[A-Z0-9_]+$" },
+          "start_s": { "type": "number", "minimum": 0 },
+          "end_s": { "type": "number", "exclusiveMinimum": 0 },
+          "segment_id": { "type": "string", "pattern": "^seg_[a-zA-Z0-9_-]+$" },
+          "trigger": { "type": "string", "minLength": 3 },
+          "operator_action": { "type": "string", "minLength": 3 },
+          "training_relevance": { "type": "string", "enum": ["include_as_recovery", "include_with_flag", "exclude_segment", "exclude_episode", "review_required"] }
+        }
+      }
+    },
+    "failure_annotations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["failure_id", "taxonomy_id", "start_s", "end_s", "segment_id", "severity", "reviewer_note"],
+        "properties": {
+          "failure_id": { "type": "string", "pattern": "^fail_[a-zA-Z0-9_-]+$" },
+          "taxonomy_id": { "type": "string", "pattern": "^FAIL_[A-Z0-9_]+$" },
+          "start_s": { "type": "number", "minimum": 0 },
+          "end_s": { "type": "number", "exclusiveMinimum": 0 },
+          "segment_id": { "type": "string", "pattern": "^seg_[a-zA-Z0-9_-]+$" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "reviewer_note": { "type": "string", "minLength": 3 },
+          "linked_intervention_id": { "type": "string", "pattern": "^int_[a-zA-Z0-9_-]+$" }
+        }
+      }
+    },
+    "sensor_qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["episode_quality", "flags", "reviewer_notes"],
+      "properties": {
+        "episode_quality": { "type": "string", "enum": ["usable", "needs_review", "reject"] },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["flag_id", "severity", "affected_sensor_ids", "recommended_action"],
+            "properties": {
+              "flag_id": { "type": "string", "pattern": "^SQA_[A-Z0-9_]+$" },
+              "severity": { "type": "string", "enum": ["info", "minor", "major", "critical"] },
+              "affected_sensor_ids": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "recommended_action": { "type": "string", "enum": ["usable", "needs_review", "reject"] },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "reviewer_notes": { "type": "string" }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_stage", "reviewer_role", "operator_notes", "reviewer_notes"],
+      "properties": {
+        "review_stage": { "type": "string", "enum": ["unreviewed", "qa_reviewed", "adjudicated", "export_ready"] },
+        "reviewer_role": { "type": "string", "enum": ["mock_reviewer", "data_qa", "robotics_specialist", "operator", "other"] },
+        "operator_notes": { "type": "string" },
+        "reviewer_notes": { "type": "string" }
+      }
+    },
+    "training_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "rationale", "recommended_use"],
+      "properties": {
+        "state": { "type": "string", "enum": ["ready", "needs_review", "exclude", "not_for_training"] },
+        "rationale": { "type": "string", "minLength": 3 },
+        "recommended_use": { "type": "string", "enum": ["tutorial_only", "train_candidate", "eval_candidate", "diagnostics_only", "exclude"] }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contains_people", "contains_private_places", "privacy_review"],
+      "properties": {
+        "contains_people": { "type": "boolean" },
+        "contains_private_places": { "type": "boolean" },
+        "privacy_review": { "type": "string", "enum": ["not_required_mock_data", "required_before_release", "completed_permissioned", "blocked"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Robotics Event Stream Review",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "timestamp_s",
+      "label"
+    ],
+    "properties": {
+      "timestamp_s": {
+        "type": "number"
+      },
+      "label": {
+        "type": "string",
+        "enum": [
+          "success",
+          "contact",
+          "safety",
+          "drift",
+          "recovery",
+          "intervention"
+        ]
+      },
+      "severity": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  }
+}

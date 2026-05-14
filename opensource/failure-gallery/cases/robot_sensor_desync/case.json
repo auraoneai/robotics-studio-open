@@ -1,0 +1,2 @@
+{"id":"robot_sensor_desync","domain":"robotics","title":"Robot episode has sensor timestamp desync","description":"A synthetic LeRobot-style episode has camera frames lagging proprioception.","review_label":"sensor-desync","expected_finding":"episode fails timestamp alignment gate","related_tool":"lerobot-quality-gates","reproduce_command":"lerobot-quality-gates check examples/bad_dataset --out report.md","synthetic":true}
+

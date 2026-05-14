@@ -1,0 +1,4 @@
+{
+  "format": "rlds-openx-metadata-bridge-v0.1",
+  "disclosure": "Metadata bridge only; full RLDS/OpenX generation requires real observations, actions, tensors, and media."
+}

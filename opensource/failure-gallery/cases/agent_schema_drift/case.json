@@ -1,0 +1,2 @@
+{"id":"agent_schema_drift","domain":"agent","title":"Tool schema drift breaks structured payloads","description":"The agent emits an old argument name after a tool contract changed.","review_label":"schema-drift","expected_finding":"tool call uses deprecated field not accepted by current tool schema","related_tool":"a2a-contract-test","reproduce_command":"a2a-contract-test run --agent-card examples/failing_agent/agent-card.json","synthetic":true}
+

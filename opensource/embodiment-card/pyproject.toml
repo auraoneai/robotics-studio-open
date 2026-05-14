@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embodiment-card"
+version = "0.1.0"
+description = "Structured embodiment cards for robot datasets and VLA releases."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "AuraOne", email = "opensource@auraone.ai" }]
+keywords = ["robotics", "datasets", "vla", "metadata", "huggingface"]
+
+[project.scripts]
+embodiment-card = "embodiment_card.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+

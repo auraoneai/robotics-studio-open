@@ -1,0 +1,2 @@
+{"id":"mcp_destructive_tool","domain":"agent","title":"MCP server exposes destructive tool without confirmation","description":"A synthetic MCP manifest declares a delete operation without guard metadata.","review_label":"mcp-risk","expected_finding":"destructive capability lacks confirmation and scope boundaries","related_tool":"mcp-risk-linter","reproduce_command":"mcp-risk-linter lint examples/risky_server.json --out report.md","synthetic":true}
+

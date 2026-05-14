@@ -1,0 +1,163 @@
+{
+  "schema_version": "0.1.0",
+  "data_status": "synthetic_mock",
+  "episode_id": "mock-episode-place-cup-001",
+  "task": {
+    "task_id": "TASK_PLACE_CUP",
+    "name": "Place cup",
+    "variant": "tabletop-target-zone-v0",
+    "success_label": "partial_success",
+    "environment_id": "mock-tabletop-env-v0",
+    "reset_state_id": "reset-cup-left-target-clear",
+    "instruction": "Move the mock cup into the marked target zone and leave it upright."
+  },
+  "embodiment": {
+    "kind": "single_arm",
+    "hardware_profile": "generic-mock-arm",
+    "end_effectors": ["parallel_gripper"],
+    "mobility": "fixed_base"
+  },
+  "timestamps": {
+    "start_s": 0,
+    "end_s": 18.4,
+    "clock_source": "synthetic_monotonic_seconds"
+  },
+  "sensors": [
+    {
+      "sensor_id": "cam_overhead",
+      "modality": "rgb",
+      "frame_rate_hz": 30,
+      "sync_group": "mock_sync_a",
+      "calibration_status": "calibrated",
+      "notes": "Synthetic placeholder stream; no real images are bundled."
+    },
+    {
+      "sensor_id": "cam_wrist",
+      "modality": "rgbd",
+      "frame_rate_hz": 30,
+      "sync_group": "mock_sync_a",
+      "calibration_status": "estimated",
+      "notes": "Synthetic placeholder metadata for viewer layout only."
+    },
+    {
+      "sensor_id": "joint_state",
+      "modality": "joint_state",
+      "frame_rate_hz": 100,
+      "sync_group": "mock_sync_a",
+      "calibration_status": "not_applicable"
+    },
+    {
+      "sensor_id": "action_tokens",
+      "modality": "action",
+      "frame_rate_hz": 20,
+      "sync_group": "mock_sync_a",
+      "calibration_status": "not_applicable"
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "seg_approach",
+      "start_s": 0,
+      "end_s": 4.2,
+      "phase": "approach",
+      "description": "Arm approaches the mock cup from the left side."
+    },
+    {
+      "segment_id": "seg_grasp",
+      "start_s": 4.2,
+      "end_s": 7.1,
+      "phase": "grasp",
+      "description": "Gripper closes on the cup rim and begins lifting."
+    },
+    {
+      "segment_id": "seg_transport",
+      "start_s": 7.1,
+      "end_s": 12.3,
+      "phase": "manipulate",
+      "description": "Cup is transported toward the marked target zone."
+    },
+    {
+      "segment_id": "seg_recover",
+      "start_s": 12.3,
+      "end_s": 15.6,
+      "phase": "recover",
+      "description": "Operator slows motion and reorients the cup after a tilt."
+    },
+    {
+      "segment_id": "seg_release",
+      "start_s": 15.6,
+      "end_s": 18.4,
+      "phase": "manipulate",
+      "description": "Cup is released near the target boundary and remains slightly tilted."
+    }
+  ],
+  "interventions": [
+    {
+      "intervention_id": "int_reorient_001",
+      "ontology_id": "INT_OBJECT_REORIENTATION",
+      "start_s": 12.6,
+      "end_s": 14.8,
+      "segment_id": "seg_recover",
+      "trigger": "Cup tilt exceeded mock review threshold during transport.",
+      "operator_action": "Reduced speed and rotated wrist before final placement.",
+      "training_relevance": "include_with_flag"
+    }
+  ],
+  "failure_annotations": [
+    {
+      "failure_id": "fail_grasp_001",
+      "taxonomy_id": "FAIL_GRASP_UNSTABLE",
+      "start_s": 6.4,
+      "end_s": 8.2,
+      "segment_id": "seg_grasp",
+      "severity": "medium",
+      "reviewer_note": "Synthetic cup begins to rotate inside gripper after lift.",
+      "linked_intervention_id": "int_reorient_001"
+    },
+    {
+      "failure_id": "fail_object_state_001",
+      "taxonomy_id": "FAIL_OBJECT_STATE_MISMATCH",
+      "start_s": 16.9,
+      "end_s": 18.4,
+      "segment_id": "seg_release",
+      "severity": "high",
+      "reviewer_note": "Final state is not upright enough for a clean success label."
+    }
+  ],
+  "sensor_qa": {
+    "episode_quality": "needs_review",
+    "flags": [
+      {
+        "flag_id": "SQA_CALIBRATION_STALE",
+        "severity": "major",
+        "affected_sensor_ids": ["cam_wrist"],
+        "recommended_action": "needs_review",
+        "note": "Wrist depth calibration is intentionally marked estimated in this mock fixture."
+      },
+      {
+        "flag_id": "SQA_SUCCESS_LABEL_AMBIGUOUS",
+        "severity": "major",
+        "affected_sensor_ids": ["cam_overhead"],
+        "recommended_action": "needs_review",
+        "note": "Partial success requires reviewer adjudication before training use."
+      }
+    ],
+    "reviewer_notes": "Mock QA shows why review metadata is separate from raw collection."
+  },
+  "review": {
+    "review_stage": "qa_reviewed",
+    "reviewer_role": "mock_reviewer",
+    "operator_notes": "Synthetic operator note: cup tilted after lift; slowed motion to recover.",
+    "reviewer_notes": "Tutorial fixture only. Not human validated, not a benchmark, and not training data."
+  },
+  "training_readiness": {
+    "state": "not_for_training",
+    "rationale": "Synthetic mock fixture exists to exercise ReviewKit schemas and viewer.",
+    "recommended_use": "tutorial_only"
+  },
+  "privacy": {
+    "contains_people": false,
+    "contains_private_places": false,
+    "privacy_review": "not_required_mock_data"
+  }
+}

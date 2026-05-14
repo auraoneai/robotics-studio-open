@@ -1,0 +1,93 @@
+version: 0.1.0
+status: public_draft
+data_notice: "Ontology for reviewed intervention metadata. Examples are synthetic and non-sensitive."
+id_prefix: INT_
+interventions:
+  - id: INT_BALANCE_CORRECTION
+    category: balance_correction
+    definition: "Operator or controller action prevents or recovers from unstable body posture."
+    example: "Mock humanoid pauses and shifts weight before continuing a reach."
+    exclusion_criteria: "Use navigation recovery when the issue is path blockage rather than body stability."
+    severity: high
+    training_relevance: include_with_flag
+    related_failure_ids: [FAIL_RECOVERY_INCOMPLETE, FAIL_FORCE_CONTROL_UNSAFE_OR_INADEQUATE]
+  - id: INT_HANDOFF_CORRECTION
+    category: handoff_correction
+    definition: "Operator adjusts pose, speed, or distance during an object handoff."
+    example: "Mock hand moves farther from a person before release."
+    exclusion_criteria: "Use human proximity adjustment for non-handoff motion near people."
+    severity: critical
+    training_relevance: review_required
+    related_failure_ids: [FAIL_HUMAN_INTERACTION_BOUNDARY]
+  - id: INT_GRASP_RETRY
+    category: grasp_retry
+    definition: "Operator or policy retries grasp setup after a failed or unstable attempt."
+    example: "Mock gripper opens, realigns, and closes again on the object."
+    exclusion_criteria: "Use object reorientation when the object is intentionally rotated before retry."
+    severity: medium
+    training_relevance: include_as_recovery
+    related_failure_ids: [FAIL_GRASP_UNSTABLE]
+  - id: INT_NAVIGATION_RECOVERY
+    category: navigation_recovery
+    definition: "Operator changes path or base pose to recover from obstacle, drift, or localization issues."
+    example: "Mock mobile base backs away from a chair before approaching again."
+    exclusion_criteria: "Use balance correction for legged stability without path replanning."
+    severity: medium
+    training_relevance: include_with_flag
+    related_failure_ids: [FAIL_PERCEPTION_MISLOCALIZATION, FAIL_RECOVERY_INCOMPLETE]
+  - id: INT_HUMAN_PROXIMITY_ADJUSTMENT
+    category: human_proximity_adjustment
+    definition: "Operator slows, pauses, reroutes, or increases clearance near a person."
+    example: "Mock robot pauses while a mock human enters the workspace."
+    exclusion_criteria: "Use handoff correction when the person is the intended recipient."
+    severity: critical
+    training_relevance: review_required
+    related_failure_ids: [FAIL_HUMAN_INTERACTION_BOUNDARY]
+  - id: INT_OBJECT_REORIENTATION
+    category: object_reorientation
+    definition: "Operator changes object orientation to make task completion possible or safe."
+    example: "Mock object is rotated before insertion into a slot."
+    exclusion_criteria: "Use grasp retry when object pose is unchanged."
+    severity: medium
+    training_relevance: include_as_recovery
+    related_failure_ids: [FAIL_OBJECT_STATE_MISMATCH, FAIL_CONTACT_RICH_MANIPULATION]
+  - id: INT_TOOL_USE_RESET
+    category: tool_use_reset
+    definition: "Operator resets a tool, fixture, or contact surface during a tool-use task."
+    example: "Mock wiping pad is repositioned after folding under itself."
+    exclusion_criteria: "Use environment reset failure when the whole episode setup is invalid."
+    severity: medium
+    training_relevance: include_with_flag
+    related_failure_ids: [FAIL_CONTACT_RICH_MANIPULATION, FAIL_ENVIRONMENT_RESET_CONTAMINATION]
+  - id: INT_FAILED_AFFORDANCE
+    category: failed_affordance
+    definition: "Operator selects a new handle, contact point, or approach because the first affordance did not work."
+    example: "Mock drawer pull switches from side lip to central handle."
+    exclusion_criteria: "Use perception failure if the affordance was never correctly localized."
+    severity: medium
+    training_relevance: include_as_recovery
+    related_failure_ids: [FAIL_PERCEPTION_MISLOCALIZATION, FAIL_SEQUENCING_ORDER]
+  - id: INT_UNSAFE_MOTION_STOP
+    category: unsafe_motion
+    definition: "Operator interrupts or redirects motion due to an unsafe trajectory, speed, contact, or proximity."
+    example: "Mock arm is stopped before contacting a fragile prop."
+    exclusion_criteria: "Use force control failure for contact force issues that were not stopped."
+    severity: critical
+    training_relevance: exclude_segment
+    related_failure_ids: [FAIL_FORCE_CONTROL_UNSAFE_OR_INADEQUATE, FAIL_HUMAN_INTERACTION_BOUNDARY]
+  - id: INT_INSTRUCTION_AMBIGUITY_RESOLUTION
+    category: instruction_ambiguity
+    definition: "Operator resolves an ambiguous task instruction through a choice or clarification."
+    example: "Mock sorter chooses the left bin after the target bin is unspecified."
+    exclusion_criteria: "Use sequencing failure when the instruction was clear but order was wrong."
+    severity: low
+    training_relevance: review_required
+    related_failure_ids: [FAIL_SEQUENCING_ORDER]
+  - id: INT_UNCLASSIFIED
+    category: unclassified
+    definition: "Temporary placeholder when an intervention is visible but not yet adjudicated."
+    example: "Mock trajectory changes abruptly and requires reviewer follow-up."
+    exclusion_criteria: "Replace with a specific intervention ID before export-ready review."
+    severity: high
+    training_relevance: review_required
+    related_failure_ids: [FAIL_TELEOP_INTERVENTION_UNLABELED]

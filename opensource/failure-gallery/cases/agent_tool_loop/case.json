@@ -1,0 +1,2 @@
+{"id":"agent_tool_loop","domain":"agent","title":"Agent repeats a failing refund lookup tool","description":"A synthetic trace loops on the same tool call after identical 404 responses.","review_label":"tool-call-loop","expected_finding":"retry policy missing terminal guard after repeated identical tool errors","related_tool":"tool-call-replay","reproduce_command":"tool-call-replay run examples/failed_refund_trace.json --scenario examples/refund_scenario.yaml","synthetic":true}
+

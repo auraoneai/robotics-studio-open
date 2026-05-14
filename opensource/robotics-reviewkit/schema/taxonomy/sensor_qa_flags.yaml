@@ -1,0 +1,69 @@
+version: 0.1.0
+status: public_draft
+data_notice: "Checklist flags for review/QA. They are not claims of automated detection."
+id_prefix: SQA_
+recommended_actions:
+  - usable
+  - needs_review
+  - reject
+flags:
+  - id: SQA_CAMERA_DESYNC
+    severity: major
+    definition: "Camera streams are offset enough to affect segment, failure, or intervention timing."
+    detection_hint: "Compare shared motion events, timestamps, and known sync pulses."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_MISSING_FRAMES
+    severity: major
+    definition: "Frames are absent in a way that interrupts evidence for task state or contact."
+    detection_hint: "Check frame counters, timestamp gaps, and review timeline holes."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_DROPPED_ACTION_TOKENS
+    severity: critical
+    definition: "Command or action records are missing during an executed movement."
+    detection_hint: "Compare action stream length and timestamps to segment duration."
+    recommended_action: reject
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_CALIBRATION_STALE
+    severity: major
+    definition: "Extrinsics, intrinsics, tactile, force, or joint calibration metadata is stale or unverified."
+    detection_hint: "Inspect calibration timestamp, rig version, and review notes."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_OCCLUSION_CRITICAL
+    severity: major
+    definition: "A sensor is blocked during a success, failure, contact, or safety-relevant interval."
+    detection_hint: "Reviewer marks affected frames or segments as visually insufficient."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_TIMESTAMP_NONMONOTONIC
+    severity: critical
+    definition: "One or more streams contain repeated, reversed, or impossible timestamps."
+    detection_hint: "Sort timestamps and flag non-increasing values within a stream."
+    recommended_action: reject
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_RESET_STATE_MISSING
+    severity: major
+    definition: "Initial environment or object reset state is not recorded well enough to judge the episode."
+    detection_hint: "Check reset_state_id, first frames, prop locations, and task variant requirements."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_UNLABELED_INTERVENTION
+    severity: major
+    definition: "Human input appears to alter the episode but no intervention entry explains the change."
+    detection_hint: "Look for discontinuities in action trajectory, view changes, or operator notes."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_SUCCESS_LABEL_AMBIGUOUS
+    severity: major
+    definition: "The success label is unsupported, contradictory, or not tied to visible final state."
+    detection_hint: "Compare task success criteria, final segment, and reviewer note."
+    recommended_action: needs_review
+    schema_field: sensor_qa.flags.flag_id
+  - id: SQA_ENVIRONMENT_METADATA_GAP
+    severity: minor
+    definition: "Relevant environment metadata such as surface, lighting, obstacle, or prop variant is missing."
+    detection_hint: "Compare task definition requirements to episode metadata."
+    recommended_action: usable
+    schema_field: sensor_qa.flags.flag_id

@@ -1,0 +1,19 @@
+{
+  "name": "Mock SO-101 tabletop manipulation dataset",
+  "robot": {"type": "so101", "morphology": "single-arm tabletop manipulator"},
+  "sensors": [
+    {"name": "wrist_camera", "type": "rgb", "rate_hz": 30},
+    {"name": "joint_encoders", "type": "proprioception", "rate_hz": 50}
+  ],
+  "action_space": {"type": "delta_joint_position", "dimensions": 6, "gripper": "binary"},
+  "coordinate_frames": [
+    {"name": "base_link", "parent": "world", "description": "Robot base frame"},
+    {"name": "wrist_camera", "parent": "end_effector", "description": "Camera optical frame"}
+  ],
+  "control_rate_hz": 30,
+  "teleop_method": "leader arm teleoperation",
+  "environment": {"workspace": "tabletop", "lighting": "indoor lab"},
+  "safety_boundaries": ["No human hand enters workspace during replay", "Low-speed scripted playback only"],
+  "limitations": ["Synthetic example", "No force-torque sensing"]
+}
+

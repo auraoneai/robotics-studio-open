@@ -1,0 +1,118 @@
+version: 0.1.0
+status: public_draft
+data_notice: "Taxonomy only. Examples are synthetic and do not describe real reviewed robotics data."
+id_prefix: FAIL_
+versioning:
+  guidance:
+    - "Do not rename IDs after publication; deprecate and add replacements instead."
+    - "Add task- or embodiment-specific subtypes only when the generic mode is insufficient for review decisions."
+    - "Keep mappings to teleop_episode.failure_annotations.taxonomy_id stable for exporters and viewers."
+failure_modes:
+  - id: FAIL_PERCEPTION_MISLOCALIZATION
+    category: perception
+    definition: "The episode shows the agent acting on an incorrect estimate of object, hand, body, or goal pose."
+    annotation_guidance: "Mark the smallest segment where the wrong pose estimate affects action choice."
+    example: "Mock arm approaches a cup as if it were several centimeters to the left."
+    exclusion_criteria: "Use object-state or sequencing failures when pose is correct but the action order is wrong."
+    severity_hint: medium
+    trainability_note: "Useful for diagnostics when paired with sensor QA and camera coverage notes."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_GRASP_UNSTABLE
+    category: grasp
+    definition: "A grasp is established but slips, crushes, misses the intended contact points, or cannot support the task."
+    annotation_guidance: "Start at first contact or attempted closure; end after release, retry, or recovery."
+    example: "Mock gripper lifts a foam block and loses it during transfer."
+    exclusion_criteria: "Use force-control failure when grasp geometry is correct but commanded force is unsafe."
+    severity_hint: medium
+    trainability_note: "Often trainable if contact timing, object pose, and retry labels are preserved."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_CONTACT_RICH_MANIPULATION
+    category: contact_rich_manipulation
+    definition: "The agent fails during sustained contact with the environment or an object, such as sliding, folding, wiping, insertion, or tool use."
+    annotation_guidance: "Mark the contact-rich interval and note the physical constraint that was violated."
+    example: "Mock spatula pushes a cloth but bunches it instead of smoothing the surface."
+    exclusion_criteria: "Use object-state failure if contact succeeds but the final state is mislabeled."
+    severity_hint: high
+    trainability_note: "Requires careful force, tactile, and camera metadata before training use."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_OCCLUSION_BLOCKED_EVIDENCE
+    category: occlusion
+    definition: "Required evidence for judging success, failure, or contact is hidden from the available sensors."
+    annotation_guidance: "Attach affected sensor IDs through sensor QA when possible."
+    example: "Mock wrist camera is blocked by the arm during a plug-in attempt."
+    exclusion_criteria: "Use sensor QA flags for pure capture issues without task impact."
+    severity_hint: medium
+    trainability_note: "Usually needs review or exclusion unless another synchronized view resolves the ambiguity."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_RECOVERY_INCOMPLETE
+    category: recovery
+    definition: "A recovery attempt starts after a disturbance but does not return the episode to a usable task state."
+    annotation_guidance: "Link to the intervention that attempted recovery when present."
+    example: "Mock operator nudges the hand back toward the target but the object remains out of reach."
+    exclusion_criteria: "Use environment reset failure if the episode boundary or reset metadata is the issue."
+    severity_hint: high
+    trainability_note: "May be valuable as recovery data only if boundaries and outcomes are explicit."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_FORCE_CONTROL_UNSAFE_OR_INADEQUATE
+    category: force_control
+    definition: "The agent applies too much, too little, or poorly timed force for the task constraints."
+    annotation_guidance: "Record whether the issue is insufficient force, excessive force, impulse, or sustained pressure."
+    example: "Mock end effector presses a cup hard enough to tip it before grasp closure."
+    exclusion_criteria: "Use grasp failure when force is acceptable but contact placement is unstable."
+    severity_hint: high
+    trainability_note: "Do not mark ready without force or tactile instrumentation notes where relevant."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_SEQUENCING_ORDER
+    category: sequencing
+    definition: "Correct subtasks are available but executed in the wrong order or with missing prerequisites."
+    annotation_guidance: "Mark the first action that violates the intended task plan."
+    example: "Mock drawer task grasps the object before opening the drawer."
+    exclusion_criteria: "Use instruction ambiguity when the expected order was not specified to the operator."
+    severity_hint: medium
+    trainability_note: "Useful for planning diagnostics when task definition version is attached."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_OBJECT_STATE_MISMATCH
+    category: object_state
+    definition: "The recorded or inferred state of an object is inconsistent with what the review evidence supports."
+    annotation_guidance: "Use for wrong open/closed, upright/tipped, folded/unfolded, inserted/not inserted, or sorted state labels."
+    example: "Mock cup is labeled placed upright while the final frame shows it tilted."
+    exclusion_criteria: "Use sensor QA if the state cannot be judged due to missing or desynced evidence."
+    severity_hint: high
+    trainability_note: "Often excludes supervised labels until corrected."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_HUMAN_INTERACTION_BOUNDARY
+    category: human_interaction
+    definition: "The episode has unclear, unsafe, or unlabeled interaction with a nearby person."
+    annotation_guidance: "Mark handoffs, proximity adjustments, or human interruptions separately from normal task motion."
+    example: "Mock handoff task enters the receiver's space without a labeled proximity adjustment."
+    exclusion_criteria: "Use privacy metadata for identifiable people or private locations."
+    severity_hint: critical
+    trainability_note: "Requires safety and privacy review before any real-data release."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_ENVIRONMENT_RESET_CONTAMINATION
+    category: environment_reset
+    definition: "Episode state is contaminated by a previous attempt, incomplete reset, moved prop, or missing initial-state evidence."
+    annotation_guidance: "Mark the earliest point where reset state becomes relevant to task judgment."
+    example: "Mock sorting bin starts with one object already in the target container."
+    exclusion_criteria: "Use task failure when reset is correct but execution fails."
+    severity_hint: high
+    trainability_note: "Usually needs exclusion or separate reset-state label before training."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_SENSOR_DESYNC_TASK_IMPACT
+    category: sensor_desync
+    definition: "Sensor or action streams are misaligned enough to change task, failure, or intervention interpretation."
+    annotation_guidance: "Pair with SQA_SENSOR_DESYNC and list affected streams."
+    example: "Mock joint states lag camera frames during a grasp retry."
+    exclusion_criteria: "Use sensor QA only if desync is measurable but does not affect review labels."
+    severity_hint: high
+    trainability_note: "Do not export as training-ready until corrected or bounded."
+    schema_field: failure_annotations.taxonomy_id
+  - id: FAIL_TELEOP_INTERVENTION_UNLABELED
+    category: teleoperator_intervention
+    definition: "Human operator input changes the episode outcome but the intervention boundary, type, or rationale is missing."
+    annotation_guidance: "Mark the inferred interval and add INT_UNCLASSIFIED in review notes until adjudicated."
+    example: "Mock mobile manipulator abruptly reorients after a hidden operator correction."
+    exclusion_criteria: "Use a specific intervention ontology ID when the intervention is already labeled."
+    severity_hint: high
+    trainability_note: "Important distinction between autonomous behavior, teleop behavior, and corrected demonstrations."
+    schema_field: failure_annotations.taxonomy_id

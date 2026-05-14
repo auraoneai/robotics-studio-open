@@ -1,0 +1,34 @@
+{
+  "episodes": [
+    {
+      "episode_id": 0,
+      "frames": 3,
+      "start_time": 1.0,
+      "end_time": 0.5,
+      "data_path": "data/chunk-000/missing_episode_000.json",
+      "video_paths": {},
+      "action_shape": [7],
+      "timestamps": [0.0, 0.02],
+      "interventions": []
+    },
+    {
+      "episode_id": 0,
+      "task": "mock_pick",
+      "frames": 2,
+      "start_time": 0.0,
+      "end_time": 0.1,
+      "data_path": "data/chunk-000/episode_001.json",
+      "video_paths": {
+        "observation.images.front": "videos/chunk-000/observation.images.front/episode_001.mp4"
+      },
+      "action_shape": [6],
+      "state_shape": [3],
+      "timestamps": [0.1, 0.05],
+      "interventions": [
+        {
+          "type": "human_correction"
+        }
+      ]
+    }
+  ]
+}

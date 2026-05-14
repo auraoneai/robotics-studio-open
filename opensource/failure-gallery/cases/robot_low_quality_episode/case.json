@@ -1,0 +1,2 @@
+{"id":"robot_low_quality_episode","domain":"robotics","title":"Low-quality robot episode passes casual inspection","description":"A synthetic dataset has missing actions, short episodes, and inconsistent metadata.","review_label":"dataset-quality","expected_finding":"quality gates produce multiple findings before training","related_tool":"lerobot-quality-gates","reproduce_command":"lerobot-quality-gates check examples/bad_dataset --out report.md","synthetic":true}
+

@@ -1,0 +1,8 @@
+packages:
+  - "opensource/robotics-studio"
+  - "opensource/open-studio-platform/packages/platform-contracts"
+  - "opensource/open-studio-platform/packages/aura-ide-kit"
+
+onlyBuiltDependencies:
+  - "@swc/core"
+  - esbuild

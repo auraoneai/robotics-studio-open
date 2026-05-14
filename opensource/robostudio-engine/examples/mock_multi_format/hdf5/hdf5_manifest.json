@@ -1,0 +1,18 @@
+{
+  "profile": "aloha",
+  "embodiment": "aloha_mock",
+  "episodes": [
+    {
+      "episode_id": "hdf5-0",
+      "path": "episode_000.hdf5",
+      "profile": "aloha",
+      "task": "fold_towel",
+      "frame_count": 5,
+      "success": true,
+      "features": {
+        "observations/images/front": {"dtype": "video", "shape": [64, 64, 3]},
+        "action": {"dtype": "float32", "shape": [14]}
+      }
+    }
+  ]
+}

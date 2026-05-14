@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "robotics-studio-open-default",
+  "description": "Default local-first permissions for Robotics Studio Open.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "fs:allow-read-file",
+    "fs:allow-read-dir",
+    "fs:allow-write-file",
+    "fs:allow-mkdir",
+    "opener:default",
+    "updater:default"
+  ]
+}

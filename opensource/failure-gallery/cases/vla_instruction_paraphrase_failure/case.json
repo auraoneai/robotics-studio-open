@@ -1,0 +1,2 @@
+{"id":"vla_instruction_paraphrase_failure","domain":"robotics","title":"VLA policy fails instruction paraphrases","description":"A synthetic VLA policy passes the original command but fails equivalent polite wording.","review_label":"language-robustness","expected_finding":"language perturbation family has low pass rate","related_tool":"vla-robustness-kit","reproduce_command":"vla-robustness-kit run examples/mock_episode_set --policy mock --out report.md","synthetic":true}
+

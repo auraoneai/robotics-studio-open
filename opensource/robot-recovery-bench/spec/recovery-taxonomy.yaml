@@ -1,0 +1,14 @@
+version: 1
+failure_reasons:
+  - contact_error
+  - grasp_misalignment
+  - object_slip
+  - perception_dropout
+  - navigation_blocked
+  - unsafe_motion
+intervention_types:
+  - human_correction
+  - reset
+  - pause_resume
+  - teleop_takeover
+  - abort

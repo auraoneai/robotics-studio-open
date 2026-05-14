@@ -1,0 +1,2 @@
+{"episode_id":"rlds-0","language_instruction":"pick the blue block","metadata":{"robot":"so101"},"steps":[{"t":0},{"t":1}],"success":true}
+{"episode_id":"rlds-1","language_instruction":"place the cup","metadata":{"robot":"so101"},"steps":[{"t":0},{"t":1},{"t":2}],"success":false,"failure_modes":["placement:miss"]}

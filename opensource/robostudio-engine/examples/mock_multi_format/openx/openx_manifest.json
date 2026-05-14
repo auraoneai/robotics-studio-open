@@ -1,0 +1,7 @@
+{
+  "version": "openx-rlds-v1",
+  "features": {
+    "observation.image": {"dtype": "video", "shape": [64, 64, 3]},
+    "action": {"dtype": "float32", "shape": [7]}
+  }
+}

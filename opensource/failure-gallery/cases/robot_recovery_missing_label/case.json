@@ -1,0 +1,2 @@
+{"id":"robot_recovery_missing_label","domain":"robotics","title":"Recovery segment lacks intervention label","description":"A synthetic recovery segment omits the intervention type and recovery result.","review_label":"recovery-label-gap","expected_finding":"segment is not training-ready because recovery metadata is incomplete","related_tool":"robot-recovery-bench","reproduce_command":"robot-recovery-bench validate examples/mock_invalid_segments.jsonl","synthetic":true}
+

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robostudio-engine"
+version = "0.1.0"
+description = "Headless Robotics Studio Open dataset adapters, indexing, QA, clustering, engine orchestration, and exports."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "AuraOne" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Robotics",
+]
+dependencies = []
+
+[project.optional-dependencies]
+hdf5 = ["h5py>=3.10"]
+hf = ["huggingface_hub>=0.23"]
+ml = ["hdbscan>=0.8.33", "numpy>=1.24", "pillow>=10", "torch>=2", "transformers>=4.40"]
+build = ["build>=1.2"]
+
+[project.urls]
+Homepage = "https://auraone.ai/open/robotics-studio"
+Source = "https://github.com/auraoneai/robotics-studio-open"
+
+[project.scripts]
+robostudio = "robostudio_engine.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["src"]
+testpaths = ["tests"]

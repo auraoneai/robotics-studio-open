@@ -1,0 +1,16 @@
+[package]
+name = "robotics-studio-open"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Rust core contracts for Robotics Studio Open."
+
+[lib]
+name = "robotics_studio_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "robotics-studio-open"
+path = "src/main.rs"
+
+[dependencies]

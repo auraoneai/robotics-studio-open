@@ -1,0 +1,13 @@
+{
+  "schema_version": "robotics-failure-modes-catalog-v0.1",
+  "catalog": [
+    "perception miss",
+    "pose ambiguity",
+    "grasp slip",
+    "collision risk",
+    "operator intervention",
+    "sensor dropout",
+    "calibration mismatch",
+    "task timeout"
+  ]
+}
