@@ -2,7 +2,7 @@
 // Layout: editorial "research index" — clusters as card "specimens" with
 // distribution histograms, recovery / homogeneity meters, and bulk actions.
 
-function FailuresScreen() {
+function FailuresScreen({ onAction, onTab }) {
   const Icon = window.ROIcon;
   const clusters = window.RO_CLUSTERS;
   const [selected, setSelected] = React.useState('c1');
@@ -23,10 +23,10 @@ function FailuresScreen() {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn">
+          <button className="ro-btn" onClick={() => onAction('Embedder set to CLIP L/14')}>
             <Icon name="sparkle" size={13}/> Embedder: <b style={{ marginLeft: 4 }}>CLIP L/14</b>
           </button>
-          <button className="ro-btn is-accent"><Icon name="bolt" size={13}/> Re-cluster</button>
+          <button className="ro-btn is-accent" onClick={() => onAction('Failure clusters refreshed with current filters')}><Icon name="bolt" size={13}/> Re-cluster</button>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ function FailuresScreen() {
       {/* Cluster cards */}
       <div style={{ padding: '0 28px 26px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
         {clusters.map(c => (
-          <ClusterCard key={c.id} c={c} selected={selected === c.id} onSelect={() => setSelected(c.id)}/>
+          <ClusterCard key={c.id} c={c} selected={selected === c.id} onSelect={() => setSelected(c.id)} onAction={onAction} onTab={onTab}/>
         ))}
       </div>
     </div>
@@ -65,7 +65,7 @@ function SmallMetric({ label, value, sub, color, emphasis }) {
   );
 }
 
-function ClusterCard({ c, selected, onSelect }) {
+function ClusterCard({ c, selected, onSelect, onAction, onTab }) {
   const Icon = window.ROIcon;
   const pillKind = c.color === 'fail' ? 'fail' : c.color === 'warn' ? 'warn' : 'ok';
   return (
@@ -146,12 +146,12 @@ function ClusterCard({ c, selected, onSelect }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn is-sm is-primary" style={{ flex: 1, justifyContent: 'center' }}>
+          <button className="ro-btn is-sm is-primary" onClick={(event) => { event.stopPropagation(); onTab('scrub'); onAction(`Reviewing representative for ${c.label}`); }} style={{ flex: 1, justifyContent: 'center' }}>
             <Icon name="play" size={11}/> Review representative
           </button>
-          <button className="ro-btn is-sm" style={{ flex: 1, justifyContent: 'center' }}>Split</button>
-          <button className="ro-btn is-sm" style={{ flex: 1, justifyContent: 'center' }}>Merge</button>
-          <button className="ro-btn is-sm is-ghost"><Icon name="chevron-right" size={12}/></button>
+          <button className="ro-btn is-sm" onClick={(event) => { event.stopPropagation(); onAction(`Split queued for ${c.label}`); }} style={{ flex: 1, justifyContent: 'center' }}>Split</button>
+          <button className="ro-btn is-sm" onClick={(event) => { event.stopPropagation(); onAction(`Merge mode enabled for ${c.label}`); }} style={{ flex: 1, justifyContent: 'center' }}>Merge</button>
+          <button className="ro-btn is-sm is-ghost" onClick={(event) => { event.stopPropagation(); onAction(`Opened taxonomy details for ${c.label}`); }}><Icon name="chevron-right" size={12}/></button>
         </div>
       </div>
     </div>

@@ -2,11 +2,14 @@
 // Layout: editorial spread — display-serif episode header, large synced sensor windows,
 // phase ribbon as chapter markers, transport controls, anomaly marginalia.
 
-function ScrubScreen({ dataset }) {
+function ScrubScreen({ dataset, onAction, onTab }) {
   const Icon = window.ROIcon;
   const phases = window.RO_PHASES;
   const [playing, setPlaying] = React.useState(false);
   const [t, setT] = React.useState(4.2); // current time in seconds
+  const [speed, setSpeed] = React.useState('1x');
+  const [episodeIndex, setEpisodeIndex] = React.useState(1);
+  const [reviewState, setReviewState] = React.useState('needs review');
   const DURATION = 12.0;
   const visible = dataset?.visible ?? 96;
   const name = dataset?.name || 'so101_kitchen_v3';
@@ -28,10 +31,10 @@ function ScrubScreen({ dataset }) {
       }}>
         <div style={{ minWidth: 0 }}>
           <div className="ro-eyebrow-mono" style={{ marginBottom: 4, color: 'var(--ro-accent-ink)' }}>
-            EPISODE 00001 · OF {visible} VISIBLE
+            EPISODE {String(episodeIndex).padStart(5, '0')} · OF {visible} VISIBLE
           </div>
           <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)', marginBottom: 6 }}>
-            {name} / ep-00001 / embodiment {embodiment}
+            {name} / ep-{String(episodeIndex).padStart(5, '0')} / embodiment {embodiment}
           </div>
           <h1 className="ro-display" style={{ fontSize: 38, margin: 0, color: 'var(--ro-ink)' }}>
             {task}, <span className="ro-display-it" style={{ color: 'var(--ro-accent-ink)' }}>v2</span> — stable wrist alignment.
@@ -48,13 +51,13 @@ function ScrubScreen({ dataset }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '0 0 auto' }}>
-          <button className="ro-btn"><Icon name="skip-prev" size={13}/> Prev</button>
-          <button className="ro-btn">Next <Icon name="skip-next" size={13}/></button>
+          <button className="ro-btn" onClick={() => { setEpisodeIndex(i => Math.max(1, i - 1)); setT(0); onAction('Loaded previous episode'); }}><Icon name="skip-prev" size={13}/> Prev</button>
+          <button className="ro-btn" onClick={() => { setEpisodeIndex(i => Math.min(visible, i + 1)); setT(0); onAction('Loaded next episode'); }}>Next <Icon name="skip-next" size={13}/></button>
           <div style={{ width: 1, height: 22, background: 'var(--ro-line)', margin: '0 4px' }}/>
-          <button className="ro-btn" style={{ color: 'var(--ro-fail-ink)', borderColor: 'var(--ro-fail-line)' }}>
+          <button className="ro-btn" onClick={() => { setReviewState('failure'); onAction(`Marked ep-${String(episodeIndex).padStart(5, '0')} as failure`); }} style={{ color: 'var(--ro-fail-ink)', borderColor: 'var(--ro-fail-line)' }}>
             <Icon name="flag" size={13}/> Mark failure
           </button>
-          <button className="ro-btn is-primary">
+          <button className="ro-btn is-primary" onClick={() => { setReviewState('reviewed'); onAction(`Marked ep-${String(episodeIndex).padStart(5, '0')} reviewed`); }}>
             <Icon name="check" size={13}/> Mark reviewed
           </button>
         </div>
@@ -152,11 +155,11 @@ function ScrubScreen({ dataset }) {
         {/* Transport */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 18 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <button className="ro-btn is-ghost" style={{ width: 32, padding: 0, justifyContent: 'center' }}><Icon name="skip-prev" size={14}/></button>
+            <button className="ro-btn is-ghost" onClick={() => setT(value => Math.max(0, value - 1 / 30))} style={{ width: 32, padding: 0, justifyContent: 'center' }}><Icon name="skip-prev" size={14}/></button>
             <button className="ro-btn is-primary" style={{ width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setPlaying(p => !p)}>
               <Icon name={playing ? 'pause' : 'play'} size={14}/>
             </button>
-            <button className="ro-btn is-ghost" style={{ width: 32, padding: 0, justifyContent: 'center' }}><Icon name="skip-next" size={14}/></button>
+            <button className="ro-btn is-ghost" onClick={() => setT(value => Math.min(DURATION, value + 1 / 30))} style={{ width: 32, padding: 0, justifyContent: 'center' }}><Icon name="skip-next" size={14}/></button>
           </div>
 
           <div className="ro-mono" style={{ fontSize: 13, color: 'var(--ro-ink)', fontWeight: 600 }}>
@@ -169,13 +172,13 @@ function ScrubScreen({ dataset }) {
             {['0.25x', '0.5x', '1x', '2x', '4x'].map((s, i) => (
               <button key={s} style={{
                 padding: '5px 10px',
-                background: s === '1x' ? 'var(--ro-ink)' : 'transparent',
-                color: s === '1x' ? 'var(--ro-paper)' : 'var(--ro-ink-2)',
+                background: s === speed ? 'var(--ro-ink)' : 'transparent',
+                color: s === speed ? 'var(--ro-paper)' : 'var(--ro-ink-2)',
                 border: 0,
                 fontFamily: 'var(--ro-mono)', fontSize: 11,
                 cursor: 'pointer',
                 borderRight: i < 4 ? '1px solid var(--ro-line)' : 'none',
-              }}>{s}</button>
+              }} onClick={() => { setSpeed(s); onAction(`Playback speed set to ${s}`); }}>{s}</button>
             ))}
           </div>
 
@@ -194,7 +197,7 @@ function ScrubScreen({ dataset }) {
             <TaxonomyChip parts={['manipulation', 'grasp', 'slip']} leaf="gripper_slip:glass"/>
           </div>
           <div style={{ marginTop: 10, fontSize: 11.5, color: 'var(--ro-ink-3)', lineHeight: 1.5 }}>
-            Auto-clustered with 46 other episodes. <a className="ro-link">View cluster →</a>
+            Auto-clustered with 46 other episodes. <button className="ro-link" onClick={() => onTab('failures')} style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}>View cluster →</button>
           </div>
         </MarginCard>
 

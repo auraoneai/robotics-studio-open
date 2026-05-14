@@ -1,7 +1,7 @@
 // Robotics Studio Open · Browse screen
 // Layout: hero metric strip + filter chips + asymmetric "gallery wall" of episodes
 
-function BrowseScreen({ dataset, filters }) {
+function BrowseScreen({ dataset, filters, onFilterChange, onDatasetUpdate, onAction, onTab }) {
   const Icon = window.ROIcon;
   const eps = window.RO_EPISODES;
   const { ReadinessBar } = window;
@@ -20,6 +20,24 @@ function BrowseScreen({ dataset, filters }) {
     filters?.sensorQA && filters.sensorQA !== 'all' ? `sensor QA: ${filters.sensorQA}` : null,
     `sort: ${filters?.sort || 'readiness'}`,
   ].filter(Boolean);
+  const sortedLabel = `${filters?.sort || 'readiness'} ${filters?.sortDir === 'asc' ? '↑' : '↓'}`;
+
+  function clearFilter(label) {
+    if (label.startsWith('search:')) onFilterChange('search', '');
+    if (label.startsWith('success:')) onFilterChange('success', 'all');
+    if (label.startsWith('reviewed:')) onFilterChange('reviewed', 'all');
+    if (label.startsWith('sensor QA:')) onFilterChange('sensorQA', 'all');
+    if (label.startsWith('sort:')) onFilterChange('sort', 'readiness');
+  }
+
+  function toggleSortDirection() {
+    onFilterChange('sortDir', filters?.sortDir === 'asc' ? 'desc' : 'asc');
+  }
+
+  function markAllReviewed() {
+    onDatasetUpdate({ reviewed: visible, needsReview: 0 });
+    onAction(`Marked ${visible} visible episodes reviewed in ${prefix}`);
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
@@ -36,9 +54,9 @@ function BrowseScreen({ dataset, filters }) {
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button className="ro-btn"><Icon name="filter" size={13}/> Filter</button>
-            <button className="ro-btn">Sort: {(filters?.sort || 'readiness')} ↓</button>
-            <button className="ro-btn is-primary"><Icon name="check" size={13}/> Mark all reviewed</button>
+            <button className="ro-btn" onClick={() => onAction('Filters are active in the left rail')}><Icon name="filter" size={13}/> Filter</button>
+            <button className="ro-btn" onClick={toggleSortDirection}>Sort: {sortedLabel}</button>
+            <button className="ro-btn is-primary" onClick={markAllReviewed}><Icon name="check" size={13}/> Mark all reviewed</button>
           </div>
         </div>
       </div>
@@ -63,10 +81,10 @@ function BrowseScreen({ dataset, filters }) {
       {/* Active filter chips */}
       <div style={{ padding: '0 26px 14px', flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <span className="ro-eyebrow-mono" style={{ marginRight: 4 }}>active</span>
-        {activeFilters.map(label => <FilterChip key={label} label={label}/>)}
+        {activeFilters.map(label => <FilterChip key={label} label={label} onRemove={() => clearFilter(label)}/>)}
         <FilterChip label={`embodiment: ${embodiment}`}/>
         <span style={{ flex: 1 }}/>
-        <a className="ro-link" style={{ fontSize: 11.5 }}>Save as view</a>
+        <button className="ro-link" onClick={() => onAction(`Saved current filters as a view for ${prefix}`)} style={{ fontSize: 11.5, border: 0, background: 'transparent', padding: 0, cursor: 'pointer' }}>Save as view</button>
       </div>
 
       {/* Episode grid */}
@@ -76,7 +94,7 @@ function BrowseScreen({ dataset, filters }) {
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 16,
         }}>
-          {eps.map((ep, i) => <EpisodeCard key={ep.id} ep={{ ...ep, embod: i % 3 === 0 ? embodiment : ep.embod }} datasetName={prefix} hero={i === 0}/>)}
+          {eps.map((ep, i) => <EpisodeCard key={ep.id} ep={{ ...ep, embod: i % 3 === 0 ? embodiment : ep.embod }} datasetName={prefix} hero={i === 0} onOpen={() => onTab('scrub')}/>)}
         </div>
       </div>
     </div>
@@ -112,17 +130,17 @@ function FilterChip({ label, onRemove }) {
       fontFamily: 'var(--ro-mono)',
     }}>
       {label}
-      <button style={{
+      {onRemove ? <button onClick={onRemove} aria-label={`Remove ${label}`} style={{
         width: 18, height: 18, padding: 0,
         border: 0, background: 'transparent', color: 'var(--ro-ink-4)',
         borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
-      }}><Icon name="cross" size={10}/></button>
+      }}><Icon name="cross" size={10}/></button> : null}
     </span>
   );
 }
 
-function EpisodeCard({ ep, datasetName, hero = false }) {
+function EpisodeCard({ ep, datasetName, hero = false, onOpen }) {
   const Icon = window.ROIcon;
   const flagToPill = {
     'needs review': { kind: 'warn', label: 'needs review' },
@@ -138,8 +156,8 @@ function EpisodeCard({ ep, datasetName, hero = false }) {
   const spark = Array.from({ length: 24 }).map((_, i) => Math.sin(i * 0.7 + seed) * 0.4 + 0.5 + Math.cos(i * 1.3 + seed * 0.6) * 0.2);
 
   return (
-    <div className="ro-ep" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Thumb area — synced multi-cam placeholder */}
+    <button className="ro-ep" onClick={onOpen} style={{ display: 'flex', flexDirection: 'column', padding: 0, textAlign: 'left', color: 'var(--ro-ink)', cursor: 'pointer' }}>
+      {/* Thumb area — synced multi-camera preview */}
       <div style={{ position: 'relative', aspectRatio: '16 / 10', borderBottom: '1px solid var(--ro-line)' }}>
         <SyncedThumb seed={seed}/>
         <span className={`ro-pill is-${successKind}`} style={{ position: 'absolute', top: 9, left: 9, height: 19, fontSize: 9.5 }}>
@@ -187,7 +205,7 @@ function EpisodeCard({ ep, datasetName, hero = false }) {
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
