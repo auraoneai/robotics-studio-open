@@ -32,9 +32,10 @@ jobs:
         with:
           version: "10.18.0"
       - name: Secret scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh | sh -s -- -b "$RUNNER_TEMP/bin"
+          "$RUNNER_TEMP/bin/gitleaks" detect --source . --redact --no-git --verbose
       - name: Python dependency CVE scan
         run: |
           python -m pip install --upgrade pip pip-audit
