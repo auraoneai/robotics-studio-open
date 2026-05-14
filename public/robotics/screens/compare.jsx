@@ -1,8 +1,11 @@
 // Robotics Studio Open · Compare screen
 // Layout: reference vs candidate, stacked, with a divergence "stave" between them.
 
-function CompareScreen() {
+function CompareScreen({ dataset }) {
   const Icon = window.ROIcon;
+  const name = dataset?.name || 'so101_kitchen_v3';
+  const embodiment = dataset?.embodiment || 'SO-101';
+  const task = dataset?.task || 'pick apple';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       <div style={{ padding: '22px 28px 16px', flex: '0 0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
@@ -23,8 +26,8 @@ function CompareScreen() {
 
       {/* Selector strip */}
       <div style={{ padding: '0 28px 14px', flex: '0 0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <CompareLane kind="reference" name="so101_kitchen_v3-ep-00001" label="pick apple v2" embod="SO-101" status="ok"/>
-        <CompareLane kind="candidate" name="policy_b_rollout_034" label="pick apple v2 · trial 12" embod="SO-101" status="warn"/>
+        <CompareLane kind="reference" name={`${name}-ep-00001`} label={`${task} v2`} embod={embodiment} status="ok"/>
+        <CompareLane kind="candidate" name="policy_b_rollout_034" label={`${task} v2 · trial 12`} embod={embodiment} status="warn"/>
       </div>
 
       {/* Stacked playback */}

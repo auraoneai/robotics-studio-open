@@ -1,14 +1,66 @@
 // Robotics Studio Open · shell (top bar, left rail, tab bar, right rail, status)
 
-function TopBar({ tab, onTab, theme, onTheme, onCommand }) {
+function formatCount(value) {
+  return Number(value || 0).toLocaleString();
+}
+
+function datasetHealth(dataset) {
+  return {
+    visible: dataset?.visible ?? window.RO_HEALTH.visible,
+    total: dataset?.count ?? window.RO_HEALTH.total,
+    readiness: dataset?.readiness ?? window.RO_HEALTH.readiness,
+    failures: dataset?.failures ?? window.RO_HEALTH.failures,
+    qaFlags: dataset?.qaFlags ?? window.RO_HEALTH.qaFlags,
+    reviewed: dataset?.reviewed ?? dataset?.visible ?? window.RO_HEALTH.visible,
+  };
+}
+
+function inferDatasetFormat(name, files) {
+  const lowerName = name.toLowerCase();
+  const fileNames = Array.from(files || []).slice(0, 80).map(file => `${file.name} ${file.webkitRelativePath || ''}`.toLowerCase());
+  const haystack = [lowerName, ...fileNames].join(' ');
+  if (haystack.includes('.hdf5') || haystack.includes('.h5') || haystack.includes('hdf5')) return 'HDF5';
+  if (haystack.includes('rlds') || haystack.includes('tfrecord')) return 'RLDS';
+  if (haystack.includes('lerobot') || haystack.includes('parquet')) return 'LeRobot v3';
+  return 'Local dataset';
+}
+
+function datasetFromFiles(files) {
+  const first = files?.[0];
+  if (!first) return null;
+  const root = first.webkitRelativePath ? first.webkitRelativePath.split('/')[0] : first.name.replace(/\.[^.]+$/, '');
+  const count = Math.max(files.length, 1);
+  const format = inferDatasetFormat(root, files);
+  const id = `local_${root.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || Date.now()}`;
+  return {
+    id,
+    name: root,
+    format,
+    count,
+    visible: Math.min(count, 96),
+    reviewed: 0,
+    needsReview: Math.min(count, 96),
+    readiness: 64,
+    failures: 0,
+    qaFlags: 0,
+    color: format === 'HDF5' ? 'warn' : 'ok',
+    path: `local://${root}`,
+    embodiment: format === 'HDF5' ? 'ALOHA' : format === 'RLDS' ? 'RoboMimic' : 'SO-101',
+    task: 'Review imported dataset',
+    output: `~/robostudio/probes/${id}`,
+  };
+}
+
+function TopBar({ tab, onTab, theme, onTheme, onCommand, dataset }) {
   const Icon = window.ROIcon;
+  const H = datasetHealth(dataset);
   return (
     <header className="ro-topbar">
       <div className="ro-active-dataset">
-        <span className="ro-dot is-ok is-pulse"/>
-        <span className="ro-mono" style={{ fontSize: 13, color: 'var(--ro-ink)', fontWeight: 600 }}>so101_kitchen_v3</span>
-        <span className="ro-mono" style={{ fontSize: 11.5, color: 'var(--ro-ink-3)' }}>12,847 ep</span>
-        <span className="ro-pill is-outline" style={{ fontSize: 9, letterSpacing: '0.06em' }}>LEROBOT v3</span>
+        <span className={`ro-dot is-${dataset?.color || 'ok'} is-pulse`}/>
+        <span className="ro-mono" style={{ fontSize: 13, color: 'var(--ro-ink)', fontWeight: 600 }}>{dataset?.name || 'No dataset'}</span>
+        <span className="ro-mono" style={{ fontSize: 11.5, color: 'var(--ro-ink-3)' }}>{formatCount(H.total)} ep</span>
+        <span className="ro-pill is-outline" style={{ fontSize: 9, letterSpacing: '0.06em' }}>{dataset?.format || 'LOCAL'}</span>
       </div>
 
       <div style={{ flex: 1 }}/>
@@ -55,7 +107,7 @@ function TopBar({ tab, onTab, theme, onTheme, onCommand }) {
       </button>
 
       {/* Primary CTA */}
-      <button className="ro-btn is-accent is-lg">
+      <button className="ro-btn is-accent is-lg" onClick={() => onTab('export')}>
         <Icon name="send" size={14}/>
         Send to AuraOne Programs
       </button>
@@ -63,7 +115,7 @@ function TopBar({ tab, onTab, theme, onTheme, onCommand }) {
   );
 }
 
-function TabBar({ tab, onTab }) {
+function TabBar({ tab, onTab, density, onDensity }) {
   const Icon = window.ROIcon;
   const TABS = window.RO_TABS;
   return (
@@ -77,17 +129,28 @@ function TabBar({ tab, onTab }) {
       <div style={{ flex: 1 }}/>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 7 }}>
         <span className="ro-eyebrow-mono" style={{ fontSize: 9, color: 'var(--ro-ink-3)' }}>VIEW</span>
-        <button className="ro-btn is-sm is-ghost">Comfortable</button>
-        <button className="ro-btn is-sm is-ghost">Compact</button>
+        <button className={`ro-btn is-sm ${density === 'comfortable' ? 'is-primary' : 'is-ghost'}`} onClick={() => onDensity('comfortable')}>Comfortable</button>
+        <button className={`ro-btn is-sm ${density === 'compact' ? 'is-primary' : 'is-ghost'}`} onClick={() => onDensity('compact')}>Compact</button>
       </div>
     </div>
   );
 }
 
-function LeftRail() {
+function LeftRail({ datasets, activeDatasetId, onSelectDataset, onDatasetOpened, filters, onFilterChange }) {
   const Icon = window.ROIcon, RSMark = window.RSMark;
-  const datasets = window.RO_DATASETS;
   const views = window.RO_SAVED_VIEWS;
+  const fileInputRef = React.useRef(null);
+
+  function openDatasetPicker() {
+    fileInputRef.current?.click();
+  }
+
+  function onDatasetFiles(event) {
+    const nextDataset = datasetFromFiles(event.target.files);
+    event.target.value = '';
+    if (nextDataset) onDatasetOpened(nextDataset);
+  }
+
   return (
     <aside className="sidebar ro-sidebar" aria-label="Robotics Studio navigation">
       <div className="brand ro-sidebar-brand">
@@ -100,7 +163,17 @@ function LeftRail() {
 
       <nav className="ro-sidebar-nav" aria-label="Datasets, filters, and saved views">
         <div style={{ padding: 14 }}>
-          <button className="ro-btn is-primary" style={{ width: '100%', justifyContent: 'center' }}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            webkitdirectory=""
+            directory=""
+            style={{ display: 'none' }}
+            onChange={onDatasetFiles}
+            aria-hidden="true"
+          />
+          <button className="ro-btn is-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={openDatasetPicker}>
             <Icon name="plus" size={13}/> Open dataset
           </button>
         </div>
@@ -110,26 +183,31 @@ function LeftRail() {
           <Icon name="database" size={11}/> Datasets
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {datasets.map((d, i) => (
-            <div key={d.id} style={{
+          {datasets.map((d, i) => {
+            const isActive = d.id === activeDatasetId;
+            return (
+            <button key={d.id} type="button" onClick={() => onSelectDataset(d.id)} style={{
               display: 'flex', alignItems: 'center', gap: 9,
               padding: '8px 10px',
               borderRadius: 7,
-              background: d.current ? 'var(--ro-paper)' : 'transparent',
-              border: d.current ? '1px solid var(--ro-line)' : '1px solid transparent',
+              background: isActive ? 'var(--ro-paper)' : 'transparent',
+              border: isActive ? '1px solid var(--ro-line)' : '1px solid transparent',
               cursor: 'pointer',
-              boxShadow: d.current ? 'var(--ro-shadow-2)' : 'none',
+              boxShadow: isActive ? 'var(--ro-shadow-2)' : 'none',
+              color: 'var(--ro-ink)',
+              font: 'inherit',
+              textAlign: 'left',
             }}>
               <span className={`ro-dot is-${d.color}`}/>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="ro-mono" style={{ fontSize: 11.5, color: 'var(--ro-ink)', fontWeight: d.current ? 600 : 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.name}</div>
+                <div className="ro-mono" style={{ fontSize: 11.5, color: 'var(--ro-ink)', fontWeight: isActive ? 600 : 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.name}</div>
                 <div style={{ fontSize: 10.5, color: 'var(--ro-ink-3)', marginTop: 1 }}>
-                  {d.format} · {d.count.toLocaleString()}
+                  {d.format} · {formatCount(d.count)}
                 </div>
               </div>
               <span className="ro-mono" style={{ fontSize: 10.5, color: 'var(--ro-ink-4)' }}>{i + 1}</span>
-            </div>
-          ))}
+            </button>
+          )})}
         </div>
         </div>
 
@@ -138,27 +216,51 @@ function LeftRail() {
           <Icon name="filter" size={11}/> Filters
         </div>
         <RailField label="Search">
-          <input className="ro-input" placeholder="episode, task, tag" style={{ height: 26, fontSize: 11.5 }}/>
+          <input
+            className="ro-input"
+            placeholder="episode, task, tag"
+            value={filters.search}
+            onChange={event => onFilterChange('search', event.target.value)}
+            style={{ height: 26, fontSize: 11.5 }}
+          />
         </RailField>
         <RailField label="Success">
-          <RailSelect value="all"/>
+          <RailSelect value={filters.success} onChange={value => onFilterChange('success', value)} options={[
+            ['all', 'all'],
+            ['success', 'success'],
+            ['failure', 'failure'],
+          ]}/>
         </RailField>
         <RailField label="Reviewed">
-          <RailSelect value="all"/>
+          <RailSelect value={filters.reviewed} onChange={value => onFilterChange('reviewed', value)} options={[
+            ['all', 'all'],
+            ['reviewed', 'reviewed'],
+            ['needs-review', 'needs review'],
+          ]}/>
         </RailField>
         <RailField label="Sensor QA">
-          <RailSelect value="all"/>
+          <RailSelect value={filters.sensorQA} onChange={value => onFilterChange('sensorQA', value)} options={[
+            ['all', 'all'],
+            ['pass', 'pass'],
+            ['warn', 'warn'],
+            ['fail', 'fail'],
+          ]}/>
         </RailField>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <RailField label="Min intv">
-            <input className="ro-input" defaultValue="0" style={{ height: 26, fontSize: 11.5 }}/>
+            <input className="ro-input" value={filters.minIntv} onChange={event => onFilterChange('minIntv', event.target.value)} style={{ height: 26, fontSize: 11.5 }}/>
           </RailField>
           <RailField label="Max sec">
-            <input className="ro-input" defaultValue="999" style={{ height: 26, fontSize: 11.5 }}/>
+            <input className="ro-input" value={filters.maxSec} onChange={event => onFilterChange('maxSec', event.target.value)} style={{ height: 26, fontSize: 11.5 }}/>
           </RailField>
         </div>
         <RailField label="Sort">
-          <RailSelect value="readiness"/>
+          <RailSelect value={filters.sort} onChange={value => onFilterChange('sort', value)} options={[
+            ['readiness', 'readiness'],
+            ['duration', 'duration'],
+            ['interventions', 'interventions'],
+            ['failures', 'failures'],
+          ]}/>
         </RailField>
         </div>
 
@@ -192,26 +294,31 @@ function RailField({ label, children }) {
   );
 }
 
-function RailSelect({ value }) {
-  const Icon = window.ROIcon;
+function RailSelect({ value, options, onChange }) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 6,
+    <select
+      className="ro-input"
+      value={value}
+      onChange={event => onChange(event.target.value)}
+      style={{
       height: 26, padding: '0 8px 0 10px',
       background: 'var(--ro-paper)',
       border: '1px solid var(--ro-line-strong)',
       borderRadius: 6,
       fontSize: 11.5, color: 'var(--ro-ink-2)',
+      width: '100%',
+      cursor: 'pointer',
     }}>
-      <span style={{ flex: 1 }}>{value}</span>
-      <Icon name="chevron-down" size={11}/>
-    </div>
+      {options.map(([optionValue, label]) => (
+        <option key={optionValue} value={optionValue}>{label}</option>
+      ))}
+    </select>
   );
 }
 
-function RightRail() {
+function RightRail({ dataset }) {
   const Icon = window.ROIcon;
-  const H = window.RO_HEALTH;
+  const H = datasetHealth(dataset);
   const sensors = window.RO_SENSORS;
   return (
     <aside className="ro-right-rail">
@@ -221,7 +328,7 @@ function RightRail() {
           <Icon name="shield" size={11}/> Dataset health
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--ro-line)', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--ro-line)' }}>
-          <HealthTile label="Visible" value={`${H.visible}`} sub={`of ${H.total.toLocaleString()}`}/>
+          <HealthTile label="Visible" value={`${H.visible}`} sub={`of ${formatCount(H.total)}`}/>
           <HealthTile label="Readiness" value={`${H.readiness}`} sub="avg / 100" color="ok"/>
           <HealthTile label="Failures" value={`${H.failures}`} sub="episodes" color="fail"/>
           <HealthTile label="QA flags" value={`${H.qaFlags}`} sub="across checks" color="warn"/>
@@ -287,17 +394,18 @@ function ShortcutRow({ label, keys }) {
   );
 }
 
-function StatusBar({ tab }) {
+function StatusBar({ tab, dataset, density }) {
+  const H = datasetHealth(dataset);
   return (
     <footer className="ro-statusbar">
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         <span className="ro-dot is-ok"/> engine OK
       </span>
-      <span>96 visible / 12,847</span>
+      <span>{H.visible} visible / {formatCount(H.total)}</span>
       <span>last save 2s ago</span>
       <span style={{ flex: 1 }}/>
       <span>tab: <span style={{ color: 'var(--ro-ink-2)' }}>{tab}</span></span>
-      <span>density comfortable</span>
+      <span>density {density}</span>
       <span>iME export</span>
     </footer>
   );

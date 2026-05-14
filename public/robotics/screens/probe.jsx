@@ -1,9 +1,12 @@
 // Robotics Studio Open · VLA probe screen
 // Layout: editorial "experiment log" — config strip + run cards + console-style report
 
-function ProbeScreen() {
+function ProbeScreen({ dataset }) {
   const Icon = window.ROIcon;
   const runs = window.RO_PROBE_RUNS;
+  const name = dataset?.name || 'so101_kitchen_v3';
+  const visible = dataset?.visible ?? 96;
+  const output = dataset?.output || '~/robostudio/probes/so101';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       <div style={{ padding: '22px 28px 16px', flex: '0 0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
@@ -26,10 +29,10 @@ function ProbeScreen() {
       <div style={{ padding: '0 28px 16px', flex: '0 0 auto' }}>
         <div className="ro-card" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto auto', alignItems: 'center', gap: 0 }}>
           <ConfigCell label="Policy" value="mock-vla-base" mono/>
-          <ConfigCell label="Target dataset" value="so101_kitchen_v3 · 96 visible episodes"/>
+          <ConfigCell label="Target dataset" value={`${name} · ${visible} visible episodes`}/>
           <ConfigCell label="Trials" value="16" mono/>
           <ConfigCell label="Seed" value="42" mono/>
-          <ConfigCell label="Output" value="~/robostudio/probes/so101" mono last/>
+          <ConfigCell label="Output" value={output} mono last/>
         </div>
       </div>
 

@@ -2,12 +2,16 @@
 // Layout: editorial spread — display-serif episode header, large synced sensor windows,
 // phase ribbon as chapter markers, transport controls, anomaly marginalia.
 
-function ScrubScreen() {
+function ScrubScreen({ dataset }) {
   const Icon = window.ROIcon;
   const phases = window.RO_PHASES;
   const [playing, setPlaying] = React.useState(false);
   const [t, setT] = React.useState(4.2); // current time in seconds
   const DURATION = 12.0;
+  const visible = dataset?.visible ?? 96;
+  const name = dataset?.name || 'so101_kitchen_v3';
+  const embodiment = dataset?.embodiment || 'SO-101';
+  const task = dataset?.task || 'Pick the apple';
 
   // current phase
   const curPhaseIdx = phases.findIndex(p => t >= p.start && t < p.end);
@@ -24,13 +28,13 @@ function ScrubScreen() {
       }}>
         <div style={{ minWidth: 0 }}>
           <div className="ro-eyebrow-mono" style={{ marginBottom: 4, color: 'var(--ro-accent-ink)' }}>
-            EPISODE 00001 · OF 96 VISIBLE
+            EPISODE 00001 · OF {visible} VISIBLE
           </div>
           <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)', marginBottom: 6 }}>
-            so101_kitchen_v3 / ep-00001 / embodiment SO-101
+            {name} / ep-00001 / embodiment {embodiment}
           </div>
           <h1 className="ro-display" style={{ fontSize: 38, margin: 0, color: 'var(--ro-ink)' }}>
-            Pick the apple, <span className="ro-display-it" style={{ color: 'var(--ro-accent-ink)' }}>v2</span> — stable wrist alignment.
+            {task}, <span className="ro-display-it" style={{ color: 'var(--ro-accent-ink)' }}>v2</span> — stable wrist alignment.
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 8, fontSize: 12, color: 'var(--ro-ink-3)' }}>
             <span><b style={{ color: 'var(--ro-ink)' }}>00:12.00</b> duration</span>

@@ -1,8 +1,9 @@
 // Robotics Studio Open · Export screen (part 1: header + summary)
 
-function ExportScreen() {
+function ExportScreen({ dataset }) {
   const Icon = window.ROIcon;
   const [target, setTarget] = React.useState('auraone');
+  const reviewed = dataset?.reviewed ?? dataset?.visible ?? 96;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       <div style={{ padding: '22px 28px 16px', flex: '0 0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
@@ -12,7 +13,7 @@ function ExportScreen() {
             Hand off a <span className="ro-display-it" style={{ color: 'var(--ro-accent-ink)' }}>clean</span> subset.
           </h1>
           <p style={{ margin: '6px 0 0', fontSize: 13.5, color: 'var(--ro-ink-3)', maxWidth: 640 }}>
-            96 reviewed episodes leave this machine as a signed manifest. Pick a destination — your disk, the Hugging Face Hub, our failure gallery, or AuraOne Programs intake.
+            {reviewed} reviewed episodes leave this machine as a signed manifest. Pick a destination — your disk, the Hugging Face Hub, our failure gallery, or AuraOne Programs intake.
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -23,7 +24,7 @@ function ExportScreen() {
 
       <div style={{ padding: '0 28px 26px', display: 'grid', gridTemplateColumns: '260px 1fr', gap: 22 }}>
         <ExportTargets target={target} setTarget={setTarget}/>
-        <ExportManifest target={target}/>
+        <ExportManifest target={target} dataset={dataset}/>
       </div>
     </div>
   );
@@ -75,13 +76,13 @@ function ExportTargets({ target, setTarget }) {
   );
 }
 
-function ExportManifest({ target }) {
+function ExportManifest({ target, dataset }) {
   const isAura = target === 'auraone';
   const targetLabel = (EXPORT_TARGETS.find(t => t.id === target) || {}).label || 'destination';
   return (
     <div className="ro-card" style={{ padding: 0, overflow: 'hidden' }}>
-      <ManifestHeader targetLabel={targetLabel} isAura={isAura}/>
-      <ManifestSummary/>
+      <ManifestHeader targetLabel={targetLabel} isAura={isAura} dataset={dataset}/>
+      <ManifestSummary dataset={dataset}/>
       <ManifestPayloads target={target}/>
       <ManifestFooter/>
     </div>
@@ -90,7 +91,9 @@ function ExportManifest({ target }) {
 
 Object.assign(window, { ExportManifest });
 
-function ManifestHeader({ targetLabel, isAura }) {
+function ManifestHeader({ targetLabel, isAura, dataset }) {
+  const name = dataset?.name || 'so101_kitchen_v3';
+  const format = dataset?.format || 'LeRobot v3';
   return (
     <div style={{
       padding: '16px 22px', display: 'flex', alignItems: 'center', gap: 14,
@@ -105,8 +108,8 @@ function ManifestHeader({ targetLabel, isAura }) {
       }}>v3</div>
       <div style={{ flex: 1 }}>
         <div className="ro-eyebrow-mono" style={{ marginBottom: 2 }}>SOURCE → {targetLabel.toUpperCase()}</div>
-        <div className="ro-display" style={{ fontSize: 22, lineHeight: 1.05 }}>so101_kitchen_v3 · reviewed subset</div>
-        <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)' }}>signed-by aura-trust-zone · format lerobot_v3</div>
+        <div className="ro-display" style={{ fontSize: 22, lineHeight: 1.05 }}>{name} · reviewed subset</div>
+        <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)' }}>signed-by aura-trust-zone · format {format}</div>
       </div>
       <span className="ro-pill is-accent" style={{ height: 22, fontSize: 10 }}>
         <span className="ro-dot is-accent is-pulse" style={{ width: 5, height: 5 }}/> READY TO SIGN
@@ -115,16 +118,19 @@ function ManifestHeader({ targetLabel, isAura }) {
   );
 }
 
-function ManifestSummary() {
+function ManifestSummary({ dataset }) {
+  const reviewed = dataset?.reviewed ?? dataset?.visible ?? 96;
+  const total = dataset?.count ?? 12847;
+  const failures = dataset?.failures ?? 27;
   return (
     <div style={{
       display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
       borderBottom: '1px solid var(--ro-line)',
     }}>
-      <SumCell label="Episodes" value="96" sub="of 12,847"/>
+      <SumCell label="Episodes" value={String(reviewed)} sub={`of ${total.toLocaleString()}`}/>
       <SumCell label="Interventions" value="190" sub="tagged"/>
       <SumCell label="Anomaly notes" value="96" sub="auto + human"/>
-      <SumCell label="Failure tags" value="27" sub="across 4 clusters" last/>
+      <SumCell label="Failure tags" value={String(failures)} sub="across 4 clusters" last/>
     </div>
   );
 }
