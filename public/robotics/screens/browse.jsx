@@ -7,7 +7,7 @@ function BrowseScreen() {
   const { ReadinessBar } = window;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       {/* Hero — title + metric strip */}
       <div style={{ padding: '22px 26px 16px', flex: '0 0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 18 }}>
@@ -57,7 +57,7 @@ function BrowseScreen() {
       </div>
 
       {/* Episode grid */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '0 26px 26px' }}>
+      <div style={{ flex: '0 0 auto', overflow: 'visible', padding: '0 26px 26px' }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',

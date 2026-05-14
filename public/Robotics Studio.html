@@ -10,9 +10,37 @@
 <link rel="stylesheet" href="robotics/robotics.css"/>
 
 <style>
-  html, body { margin: 0; padding: 0; height: 100%; }
-  body { background: var(--ro-paper); overflow: auto; }
-  #root { height: 100%; min-width: 1360px; }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--ro-paper);
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  @media (max-width: 1020px) {
+    html,
+    body,
+    #root {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
 </style>
 
 <template id="__bundler_thumbnail">
@@ -212,17 +240,19 @@ function App() {
 
   return (
     <>
-      <div className="ro" data-screen-label={`Robotics Studio · ${tab}`}>
-        <window.TopBar tab={tab} onTab={setTab} theme={t.theme} onTheme={v => setT('theme', v)} onCommand={() => setCommandOpen(true)}/>
-        <window.TabBar tab={tab} onTab={setTab}/>
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
-          <window.LeftRail/>
-          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, background: 'var(--ro-paper)' }}>
-            <Screen onTab={setTab}/>
-          </main>
-          {!fullWidth && <window.RightRail/>}
+      <div className="ro studio-shell" data-screen-label={`Robotics Studio · ${tab}`}>
+        <window.LeftRail/>
+        <div className="ro-main-frame">
+          <window.TopBar tab={tab} onTab={setTab} theme={t.theme} onTheme={v => setT('theme', v)} onCommand={() => setCommandOpen(true)}/>
+          <window.TabBar tab={tab} onTab={setTab}/>
+          <div className="workbench ro-workbench">
+            <main className="ro-workbench-main">
+              <Screen onTab={setTab}/>
+            </main>
+            {!fullWidth && <window.RightRail/>}
+          </div>
+          <window.StatusBar tab={tab}/>
         </div>
-        <window.StatusBar tab={tab}/>
       </div>
 
       {commandOpen ? (

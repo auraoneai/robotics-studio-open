@@ -13,7 +13,7 @@ function ScrubScreen() {
   const curPhaseIdx = phases.findIndex(p => t >= p.start && t < p.end);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       {/* HEADER — episode "title card" */}
       <div style={{
         padding: '20px 28px 18px',
