@@ -394,7 +394,7 @@ function ShortcutRow({ label, keys }) {
   );
 }
 
-function StatusBar({ tab, dataset, density }) {
+function StatusBar({ tab, dataset, density, notice }) {
   const H = datasetHealth(dataset);
   return (
     <footer className="ro-statusbar">
@@ -402,7 +402,7 @@ function StatusBar({ tab, dataset, density }) {
         <span className="ro-dot is-ok"/> engine OK
       </span>
       <span>{H.visible} visible / {formatCount(H.total)}</span>
-      <span>last save 2s ago</span>
+      <span>{notice || 'Ready'}</span>
       <span style={{ flex: 1 }}/>
       <span>tab: <span style={{ color: 'var(--ro-ink-2)' }}>{tab}</span></span>
       <span>density {density}</span>

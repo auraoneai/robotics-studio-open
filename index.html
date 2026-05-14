@@ -61,7 +61,6 @@
 <script type="text/babel" src="robotics/data.jsx"></script>
 <script type="text/babel" src="robotics/icons.jsx"></script>
 <script type="text/babel" src="robotics/shell.jsx"></script>
-<script type="text/babel" src="robotics/screens/_stubs.jsx"></script>
 <script type="text/babel" src="robotics/screens/browse.jsx"></script>
 <script type="text/babel" src="robotics/screens/scrub.jsx"></script>
 <script type="text/babel" src="robotics/screens/failures.jsx"></script>
@@ -178,7 +177,9 @@ function App() {
     minIntv: '0',
     maxSec: '999',
     sort: 'readiness',
+    sortDir: 'desc',
   });
+  const [notice, setNotice] = React.useState('Ready');
   const [commandOpen, setCommandOpen] = React.useState(false);
   const [commandQuery, setCommandQuery] = React.useState('');
   const activeDataset = datasets.find(dataset => dataset.id === activeDatasetId) || datasets[0] || null;
@@ -222,10 +223,22 @@ function App() {
       return [...current, dataset];
     });
     selectDataset(dataset.id);
+    setNotice(`Opened local dataset: ${dataset.name}`);
   }
 
   function updateFilter(key, value) {
     setFilters(current => ({ ...current, [key]: value }));
+    setNotice(`Filter updated: ${key}`);
+  }
+
+  function updateActiveDataset(patch) {
+    setDatasets(current => current.map(dataset => (
+      dataset.id === activeDatasetId ? { ...dataset, ...patch } : dataset
+    )));
+  }
+
+  function onAction(message) {
+    setNotice(message);
   }
 
   const SCREENS = {
@@ -261,7 +274,7 @@ function App() {
     return [
       ...tabCommands,
       ...datasetCommands,
-      { id: 'open-dataset', label: 'Open dataset', group: 'Dataset', shortcut: '⌘O', keywords: 'load import lerobot rlds hdf5', run: () => setTab('browse') },
+      { id: 'open-dataset', label: 'Open dataset', group: 'Dataset', shortcut: '⌘O', keywords: 'load import lerobot rlds hdf5', run: () => onAction('Use Open dataset in the sidebar to choose a local folder') },
       { id: 'review-failures', label: 'Review failure clusters', group: 'Failure taxonomy', shortcut: 'F', keywords: 'cluster taxonomy failures', run: () => setTab('failures') },
       { id: 'run-vla-probe', label: 'Run VLA probe', group: 'Model QA', shortcut: 'P', keywords: 'probe policy vla model', run: () => setTab('probe') },
       { id: 'sensor-qa', label: 'Open sensor QA checks', group: 'Quality', shortcut: 'Q', keywords: 'sensor dropped frames calibration continuity', run: () => setTab('sensorqa') },
@@ -299,11 +312,18 @@ function App() {
           <window.TabBar tab={tab} onTab={setTab} density={t.density} onDensity={v => setT('density', v)}/>
           <div className="workbench ro-workbench">
             <main className="ro-workbench-main">
-              <Screen onTab={setTab} dataset={activeDataset} filters={filters}/>
+              <Screen
+                onTab={setTab}
+                dataset={activeDataset}
+                filters={filters}
+                onFilterChange={updateFilter}
+                onDatasetUpdate={updateActiveDataset}
+                onAction={onAction}
+              />
             </main>
             {!fullWidth && <window.RightRail dataset={activeDataset}/>}
           </div>
-          <window.StatusBar tab={tab} dataset={activeDataset} density={t.density}/>
+          <window.StatusBar tab={tab} dataset={activeDataset} density={t.density} notice={notice}/>
         </div>
       </div>
 

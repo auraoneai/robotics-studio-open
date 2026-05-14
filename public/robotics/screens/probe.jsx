@@ -1,9 +1,9 @@
 // Robotics Studio Open · VLA probe screen
 // Layout: editorial "experiment log" — config strip + run cards + console-style report
 
-function ProbeScreen({ dataset }) {
+function ProbeScreen({ dataset, onAction, onTab }) {
   const Icon = window.ROIcon;
-  const runs = window.RO_PROBE_RUNS;
+  const [runs, setRuns] = React.useState(window.RO_PROBE_RUNS);
   const name = dataset?.name || 'so101_kitchen_v3';
   const visible = dataset?.visible ?? 96;
   const output = dataset?.output || '~/robostudio/probes/so101';
@@ -20,8 +20,11 @@ function ProbeScreen({ dataset }) {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn"><Icon name="commit" size={13}/> Save config</button>
-          <button className="ro-btn is-accent"><Icon name="play" size={13}/> Run probe</button>
+          <button className="ro-btn" onClick={() => onAction(`Saved probe config for ${name}`)}><Icon name="commit" size={13}/> Save config</button>
+          <button className="ro-btn is-accent" onClick={() => {
+            setRuns(current => current.map((run, index) => index === 3 ? { ...run, status: 'running', ms: 0 } : run));
+            onAction(`Started VLA probe for ${name}`);
+          }}><Icon name="play" size={13}/> Run probe</button>
         </div>
       </div>
 
@@ -74,9 +77,9 @@ function ProbeScreen({ dataset }) {
               {' '}Lighting drop to 40 lux causes a 31% drop in pick success. Recommend collecting <b>200 more episodes</b> with lighting variation under 50 lux and adding <b>gripper-slip counterexamples</b> to the next training mix.
             </p>
             <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              <button className="ro-btn is-sm">Open failing trials</button>
-              <button className="ro-btn is-sm">Link to cluster · gripper_slip:glass</button>
-              <button className="ro-btn is-sm is-accent">Add to next batch</button>
+              <button className="ro-btn is-sm" onClick={() => onTab('compare')}>Open failing trials</button>
+              <button className="ro-btn is-sm" onClick={() => onTab('failures')}>Link to cluster · gripper_slip:glass</button>
+              <button className="ro-btn is-sm is-accent" onClick={() => onAction('Added 200 lighting-variation episodes to next collection batch')}>Add to next batch</button>
             </div>
           </div>
 

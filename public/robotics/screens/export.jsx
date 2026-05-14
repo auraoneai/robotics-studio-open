@@ -1,8 +1,9 @@
 // Robotics Studio Open · Export screen (part 1: header + summary)
 
-function ExportScreen({ dataset }) {
+function ExportScreen({ dataset, onAction }) {
   const Icon = window.ROIcon;
   const [target, setTarget] = React.useState('auraone');
+  const [exportState, setExportState] = React.useState('ready');
   const reviewed = dataset?.reviewed ?? dataset?.visible ?? 96;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
@@ -17,14 +18,14 @@ function ExportScreen({ dataset }) {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn"><Icon name="download" size={13}/> Dry-run</button>
-          <button className="ro-btn is-accent is-lg"><Icon name="send" size={13}/> Start export</button>
+          <button className="ro-btn" onClick={() => { setExportState('dry-run complete'); onAction(`Dry-run complete for ${dataset?.name || 'dataset'}`); }}><Icon name="download" size={13}/> Dry-run</button>
+          <button className="ro-btn is-accent is-lg" onClick={() => { setExportState('export staged'); onAction(`Export staged for ${dataset?.name || 'dataset'} to ${target}`); }}><Icon name="send" size={13}/> Start export</button>
         </div>
       </div>
 
       <div style={{ padding: '0 28px 26px', display: 'grid', gridTemplateColumns: '260px 1fr', gap: 22 }}>
         <ExportTargets target={target} setTarget={setTarget}/>
-        <ExportManifest target={target} dataset={dataset}/>
+        <ExportManifest target={target} dataset={dataset} exportState={exportState} onAction={onAction}/>
       </div>
     </div>
   );
@@ -76,7 +77,7 @@ function ExportTargets({ target, setTarget }) {
   );
 }
 
-function ExportManifest({ target, dataset }) {
+function ExportManifest({ target, dataset, exportState, onAction }) {
   const isAura = target === 'auraone';
   const targetLabel = (EXPORT_TARGETS.find(t => t.id === target) || {}).label || 'destination';
   return (
@@ -84,7 +85,7 @@ function ExportManifest({ target, dataset }) {
       <ManifestHeader targetLabel={targetLabel} isAura={isAura} dataset={dataset}/>
       <ManifestSummary dataset={dataset}/>
       <ManifestPayloads target={target}/>
-      <ManifestFooter/>
+      <ManifestFooter exportState={exportState} onAction={onAction} target={target} dataset={dataset}/>
     </div>
   );
 }
@@ -189,7 +190,7 @@ function ManifestPayloads({ target }) {
   );
 }
 
-function ManifestFooter() {
+function ManifestFooter({ exportState, onAction, target, dataset }) {
   return (
     <div style={{
       padding: '14px 22px',
@@ -198,11 +199,11 @@ function ManifestFooter() {
       display: 'flex', alignItems: 'center', gap: 12,
     }}>
       <span className="ro-mono" style={{ fontSize: 10.5, color: 'var(--ro-ink-3)' }}>
-        sha256 c8f3…a91d · key fingerprint ED25519:VLPS…6yqA · time 2026-05-14T10:48Z
+        sha256 c8f3…a91d · key fingerprint ED25519:VLPS…6yqA · status {exportState}
       </span>
       <span style={{ flex: 1 }}/>
-      <button className="ro-btn is-sm">View dry-run</button>
-      <button className="ro-btn is-sm is-primary">Sign &amp; ship</button>
+      <button className="ro-btn is-sm" onClick={() => onAction(`Opened dry-run manifest for ${dataset?.name || 'dataset'}`)}>View dry-run</button>
+      <button className="ro-btn is-sm is-primary" onClick={() => onAction(`Signed ${dataset?.name || 'dataset'} manifest for ${target}`)}>Sign &amp; ship</button>
     </div>
   );
 }

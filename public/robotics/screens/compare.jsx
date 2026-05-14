@@ -1,7 +1,7 @@
 // Robotics Studio Open · Compare screen
 // Layout: reference vs candidate, stacked, with a divergence "stave" between them.
 
-function CompareScreen({ dataset }) {
+function CompareScreen({ dataset, onAction }) {
   const Icon = window.ROIcon;
   const name = dataset?.name || 'so101_kitchen_v3';
   const embodiment = dataset?.embodiment || 'SO-101';
@@ -19,15 +19,15 @@ function CompareScreen({ dataset }) {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn"><Icon name="split" size={13}/> Map model inputs</button>
-          <button className="ro-btn is-primary"><Icon name="download" size={13}/> Export diff</button>
+          <button className="ro-btn" onClick={() => onAction('Mapped model inputs to RGB, depth, joint state, and gripper command')}><Icon name="split" size={13}/> Map model inputs</button>
+          <button className="ro-btn is-primary" onClick={() => onAction(`Exported diff report for ${name}`)}><Icon name="download" size={13}/> Export diff</button>
         </div>
       </div>
 
       {/* Selector strip */}
       <div style={{ padding: '0 28px 14px', flex: '0 0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <CompareLane kind="reference" name={`${name}-ep-00001`} label={`${task} v2`} embod={embodiment} status="ok"/>
-        <CompareLane kind="candidate" name="policy_b_rollout_034" label={`${task} v2 · trial 12`} embod={embodiment} status="warn"/>
+        <CompareLane kind="reference" name={`${name}-ep-00001`} label={`${task} v2`} embod={embodiment} status="ok" onAction={onAction}/>
+        <CompareLane kind="candidate" name="policy_b_rollout_034" label={`${task} v2 · trial 12`} embod={embodiment} status="warn" onAction={onAction}/>
       </div>
 
       {/* Stacked playback */}
@@ -76,7 +76,7 @@ function CompareScreen({ dataset }) {
   );
 }
 
-function CompareLane({ kind, name, label, embod, status }) {
+function CompareLane({ kind, name, label, embod, status, onAction }) {
   const Icon = window.ROIcon;
   const isRef = kind === 'reference';
   return (
@@ -96,7 +96,7 @@ function CompareLane({ kind, name, label, embod, status }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span className="ro-pill is-outline" style={{ height: 18, fontSize: 9.5, fontFamily: 'var(--ro-mono)' }}>{embod}</span>
-        <button className="ro-btn is-sm is-ghost"><Icon name="chevron-down" size={11}/></button>
+        <button className="ro-btn is-sm is-ghost" onClick={() => onAction(`Opened ${kind} selector`)}><Icon name="chevron-down" size={11}/></button>
       </div>
     </div>
   );

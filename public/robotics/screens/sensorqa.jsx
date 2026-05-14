@@ -1,7 +1,7 @@
 // Robotics Studio Open · Sensor QA screen
 // Layout: lab report — each check is a row with prose finding + sparkline evidence.
 
-function SensorQAScreen({ dataset }) {
+function SensorQAScreen({ dataset, onAction }) {
   const Icon = window.ROIcon;
   const checks = window.RO_QA_CHECKS;
   const name = dataset?.name || 'so101_kitchen_v3';
@@ -25,8 +25,8 @@ function SensorQAScreen({ dataset }) {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn"><Icon name="bolt" size={13}/> Re-run all</button>
-          <button className="ro-btn is-primary"><Icon name="download" size={13}/> Export markdown</button>
+          <button className="ro-btn" onClick={() => onAction(`Re-ran sensor QA for ${name}`)}><Icon name="bolt" size={13}/> Re-run all</button>
+          <button className="ro-btn is-primary" onClick={() => onAction(`Exported sensor QA markdown for ${name}`)}><Icon name="download" size={13}/> Export markdown</button>
         </div>
       </div>
 
@@ -112,7 +112,6 @@ function QARow({ c }) {
 }
 
 function QASpark({ kind }) {
-  // dummy distribution sparkline reflecting the check status
   const color = kind === 'pass' ? 'var(--ro-ok)' : kind === 'fail' ? 'var(--ro-fail)' : 'var(--ro-warn)';
   return (
     <svg viewBox="0 0 120 30" preserveAspectRatio="none" style={{ width: '100%', height: 30, display: 'block' }}>

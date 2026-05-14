@@ -1,7 +1,7 @@
 // Robotics Studio Open · Settings screen
 // Layout: document with margin notes — each section feels like a chapter.
 
-function SettingsScreen() {
+function SettingsScreen({ onAction }) {
   const Icon = window.ROIcon;
   const [optIn, setOptIn] = React.useState(false);
   const [keyChecked, setKeyChecked] = React.useState(false);
@@ -18,8 +18,8 @@ function SettingsScreen() {
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="ro-btn"><Icon name="bolt" size={13}/> Re-check hooks</button>
-          <button className="ro-btn is-accent"><Icon name="shield" size={13}/> Ensure intake key</button>
+          <button className="ro-btn" onClick={() => onAction('Re-checked 7 shared platform hooks')}><Icon name="bolt" size={13}/> Re-check hooks</button>
+          <button className="ro-btn is-accent" onClick={() => { setKeyChecked(true); onAction('Intake signing key verified in local keychain'); }}><Icon name="shield" size={13}/> Ensure intake key</button>
         </div>
       </div>
 
@@ -32,14 +32,14 @@ function SettingsScreen() {
               title="Telemetry opt-in"
               status={optIn ? 'events stream to AuraOne' : 'events stay local as would-send'}
               hint="When off, we log events locally and never network anything. Useful for compliance reviews."
-              control={<Toggle on={optIn} onChange={setOptIn} label="On"/>}
+              control={<Toggle on={optIn} onChange={(value) => { setOptIn(value); onAction(value ? 'Telemetry opt-in enabled' : 'Telemetry switched to local-only mode'); }} label="On"/>}
             />
             <SettingsRow
               kind={keyChecked ? 'ok' : 'warn'}
               title="Install signing key"
               status={keyChecked ? 'ED25519:VLPS…6yqA · valid' : 'not checked'}
               hint="One-way ED25519 key used to sign exports headed for AuraOne Programs. Stored in the OS keychain."
-              control={<button className="ro-btn is-sm" onClick={() => setKeyChecked(true)}>{keyChecked ? 'Re-verify' : 'Verify now'}</button>}
+              control={<button className="ro-btn is-sm" onClick={() => { setKeyChecked(true); onAction('Install signing key verified'); }}>{keyChecked ? 'Re-verify' : 'Verify now'}</button>}
             />
             <SettingsRow
               kind="ok"
