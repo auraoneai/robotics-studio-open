@@ -1,0 +1,61 @@
+{
+  "name": "@auraone/aura-ide-kit",
+  "version": "0.1.0",
+  "description": "AuraGlass IDE-class incubation components for AuraOne Open Studio flagships.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./dist/styles.css",
+    "./src/styles.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "examples"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean && cp src/styles.css dist/styles.css",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --environment jsdom",
+    "test:watch": "vitest --environment jsdom"
+  },
+  "peerDependencies": {
+    "aura-glass": "3.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "4.7.0",
+    "lucide-react": "0.554.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.0",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.7.0",
+    "axe-core": "4.11.0",
+    "jsdom": "25.0.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "vite": "5.4.21",
+    "vitest": "2.1.9"
+  },
+  "engines": {
+    "node": ">=20.19.5"
+  },
+  "packageManager": "pnpm@10.18.0"
+}

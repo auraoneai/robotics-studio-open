@@ -1,0 +1,16 @@
+{
+  "lerobot_version": "v3",
+  "license": "MIT-synthetic",
+  "license_file": "DATASET_CARD.md",
+  "provenance": "AuraOne-authored synthetic metadata fixture; no real robot media, partner data, or third-party demonstrations.",
+  "task": "kitchen-counter-pick-place",
+  "teleop_method": "synthetic phone-guided teleop",
+  "control_rate_hz": 30,
+  "coordinate_frames": ["base", "wrist", "camera_front"],
+  "joint_limits": {
+    "shoulder_pan": [-2.6, 2.6],
+    "elbow": [-2.0, 2.0],
+    "wrist_roll": [-3.14, 3.14]
+  },
+  "sample_dataset_notice": "Synthetic metadata fixture for Robotics Studio Open smoke tests. No real robot clips."
+}

@@ -1,0 +1,7 @@
+.vercel
+node_modules
+dist
+src-tauri/target
+*.log
+reports
+.robostudio

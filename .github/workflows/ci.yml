@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   matrix:
-    name: ${{ matrix.name }}
+    name: CI / ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -69,7 +69,7 @@ jobs:
           test -f .github/settings.yml
 
   gpu:
-    name: gpu-video-embedding
+    name: CI / gpu-video-embedding
     runs-on: [self-hosted, linux, x64, gpu]
     if: ${{ vars.ROBOTICS_GPU_CI_ENABLED == 'true' }}
     steps:
