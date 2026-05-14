@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   qa:
+    name: Accessibility and Performance / qa
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
