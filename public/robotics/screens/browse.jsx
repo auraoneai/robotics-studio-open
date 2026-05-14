@@ -1,10 +1,25 @@
 // Robotics Studio Open · Browse screen
 // Layout: hero metric strip + filter chips + asymmetric "gallery wall" of episodes
 
-function BrowseScreen() {
+function BrowseScreen({ dataset, filters }) {
   const Icon = window.ROIcon;
   const eps = window.RO_EPISODES;
   const { ReadinessBar } = window;
+  const visible = dataset?.visible ?? 96;
+  const reviewed = dataset?.reviewed ?? visible;
+  const failures = dataset?.failures ?? 14;
+  const readiness = dataset?.readiness ?? 75;
+  const qaFlags = dataset?.qaFlags ?? 30;
+  const needsReview = dataset?.needsReview ?? Math.max(visible - reviewed + Math.ceil(failures / 2), 0);
+  const prefix = dataset?.name || 'so101_kitchen_v3';
+  const embodiment = dataset?.embodiment || 'SO-101';
+  const activeFilters = [
+    filters?.search ? `search: ${filters.search}` : null,
+    filters?.success && filters.success !== 'all' ? `success: ${filters.success}` : null,
+    filters?.reviewed && filters.reviewed !== 'all' ? `reviewed: ${filters.reviewed.replace('-', ' ')}` : null,
+    filters?.sensorQA && filters.sensorQA !== 'all' ? `sensor QA: ${filters.sensorQA}` : null,
+    `sort: ${filters?.sort || 'readiness'}`,
+  ].filter(Boolean);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
@@ -17,12 +32,12 @@ function BrowseScreen() {
               The episodes that need <span className="ro-display-it" style={{ color: 'var(--ro-accent-ink)' }}>a human eye</span>.
             </h1>
             <p style={{ margin: '6px 0 0', fontSize: 13.5, color: 'var(--ro-ink-3)', maxWidth: 620 }}>
-              96 episodes match your filters. Sorted by readiness — least confident first, so the next thing you scrub is the one most likely to bend training.
+              {visible} episodes match your filters in {prefix}. Sorted by readiness — least confident first, so the next thing you scrub is the one most likely to bend training.
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button className="ro-btn"><Icon name="filter" size={13}/> Filter</button>
-            <button className="ro-btn">Sort: readiness ↓</button>
+            <button className="ro-btn">Sort: {(filters?.sort || 'readiness')} ↓</button>
             <button className="ro-btn is-primary"><Icon name="check" size={13}/> Mark all reviewed</button>
           </div>
         </div>
@@ -37,21 +52,19 @@ function BrowseScreen() {
           background: 'var(--ro-paper)',
           overflow: 'hidden',
         }}>
-          <MetricCell label="Visible episodes"   value="96"   sub="of 96 filtered"           emphasis/>
-          <MetricCell label="Needs review"       value="64"   sub="first pass" />
-          <MetricCell label="Failures"           value="14"   sub="exclude or recover" color="fail"/>
-          <MetricCell label="Avg readiness"      value="75"   sub="↑ 4 since Monday" color="ok"/>
-          <MetricCell label="Sensor QA flags"    value="30"   sub="6 checks · 14 episodes" color="warn"/>
+          <MetricCell label="Visible episodes"   value={String(visible)}   sub={`of ${visible} filtered`}           emphasis/>
+          <MetricCell label="Needs review"       value={String(needsReview)}   sub="first pass" />
+          <MetricCell label="Failures"           value={String(failures)}   sub="exclude or recover" color="fail"/>
+          <MetricCell label="Avg readiness"      value={String(readiness)}   sub="↑ 4 since Monday" color="ok"/>
+          <MetricCell label="Sensor QA flags"    value={String(qaFlags)}   sub={`6 checks · ${failures} episodes`} color="warn"/>
         </div>
       </div>
 
       {/* Active filter chips */}
       <div style={{ padding: '0 26px 14px', flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <span className="ro-eyebrow-mono" style={{ marginRight: 4 }}>active</span>
-        <FilterChip label="readiness < 70"   onRemove={() => {}}/>
-        <FilterChip label="cluster: gripper_slip:glass"/>
-        <FilterChip label="embodiment: SO-101"/>
-        <FilterChip label="reviewed: any"/>
+        {activeFilters.map(label => <FilterChip key={label} label={label}/>)}
+        <FilterChip label={`embodiment: ${embodiment}`}/>
         <span style={{ flex: 1 }}/>
         <a className="ro-link" style={{ fontSize: 11.5 }}>Save as view</a>
       </div>
@@ -63,7 +76,7 @@ function BrowseScreen() {
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 16,
         }}>
-          {eps.map((ep, i) => <EpisodeCard key={ep.id} ep={ep} hero={i === 0}/>)}
+          {eps.map((ep, i) => <EpisodeCard key={ep.id} ep={{ ...ep, embod: i % 3 === 0 ? embodiment : ep.embod }} datasetName={prefix} hero={i === 0}/>)}
         </div>
       </div>
     </div>
@@ -109,7 +122,7 @@ function FilterChip({ label, onRemove }) {
   );
 }
 
-function EpisodeCard({ ep, hero = false }) {
+function EpisodeCard({ ep, datasetName, hero = false }) {
   const Icon = window.ROIcon;
   const flagToPill = {
     'needs review': { kind: 'warn', label: 'needs review' },
@@ -148,7 +161,7 @@ function EpisodeCard({ ep, hero = false }) {
       <div style={{ padding: '12px 14px 13px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ro-ink)' }}>{ep.task}</span>
-          <span className="ro-mono" style={{ fontSize: 10.5, color: 'var(--ro-ink-3)' }}>so101_kitchen_v3-{ep.id}</span>
+          <span className="ro-mono" style={{ fontSize: 10.5, color: 'var(--ro-ink-3)' }}>{datasetName}-{ep.id}</span>
         </div>
 
         {/* Readiness band */}

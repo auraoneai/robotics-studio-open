@@ -1,9 +1,17 @@
 // Robotics Studio Open · Sensor QA screen
 // Layout: lab report — each check is a row with prose finding + sparkline evidence.
 
-function SensorQAScreen() {
+function SensorQAScreen({ dataset }) {
   const Icon = window.ROIcon;
   const checks = window.RO_QA_CHECKS;
+  const name = dataset?.name || 'so101_kitchen_v3';
+  const path = dataset?.path || '~/datasets/so101_kitchen_v3';
+  const format = dataset?.format || 'LeRobot v3';
+  const visible = dataset?.visible ?? 96;
+  const total = dataset?.count ?? 12847;
+  const readiness = dataset?.readiness ?? 75;
+  const failures = dataset?.failures ?? 14;
+  const qaFlags = dataset?.qaFlags ?? 30;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'visible' }}>
       <div style={{ padding: '22px 28px 16px', flex: '0 0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
@@ -29,14 +37,14 @@ function SensorQAScreen() {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingBottom: 14, borderBottom: '1px solid var(--ro-line)', marginBottom: 18, gap: 24 }}>
             <div>
               <div className="ro-eyebrow-mono" style={{ marginBottom: 4 }}>QA TARGET</div>
-              <div className="ro-display" style={{ fontSize: 26, lineHeight: 1, marginBottom: 4 }}>so101_kitchen_v3</div>
-              <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)' }}>~/datasets/so101_kitchen_v3 · LeRobot v3</div>
+              <div className="ro-display" style={{ fontSize: 26, lineHeight: 1, marginBottom: 4 }}>{name}</div>
+              <div className="ro-mono" style={{ fontSize: 11, color: 'var(--ro-ink-3)' }}>{path} · {format}</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, auto)', gap: 24, textAlign: 'right' }}>
-              <Tiny label="Episodes" value="96" sub="/ 12,847"/>
-              <Tiny label="Readiness" value="75" sub="avg / 100" color="ok"/>
-              <Tiny label="Failures" value="14" color="fail"/>
-              <Tiny label="QA flags" value="30" color="warn"/>
+              <Tiny label="Episodes" value={String(visible)} sub={`/ ${total.toLocaleString()}`}/>
+              <Tiny label="Readiness" value={String(readiness)} sub="avg / 100" color="ok"/>
+              <Tiny label="Failures" value={String(failures)} color="fail"/>
+              <Tiny label="QA flags" value={String(qaFlags)} color="warn"/>
             </div>
           </div>
 
@@ -50,7 +58,7 @@ function SensorQAScreen() {
           <div style={{ marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--ro-line)' }}>
             <div className="ro-eyebrow-mono" style={{ marginBottom: 8 }}>Embodiment validation</div>
             <p style={{ margin: 0, fontSize: 13.5, color: 'var(--ro-ink-2)', lineHeight: 1.55, fontFamily: 'var(--ro-display)' }}>
-              <span style={{ fontSize: 18 }}>so101_kitchen_v3</span> claims <b>6 sensor streams</b> and <b>7 action dimensions</b>. Measured control frequency is <b style={{ color: 'var(--ro-warn-ink)' }}>49.8 Hz</b> against a <b>50 Hz</b> card claim — within tolerance, but worth a glance.
+              <span style={{ fontSize: 18 }}>{name}</span> claims <b>6 sensor streams</b> and <b>7 action dimensions</b>. Measured control frequency is <b style={{ color: 'var(--ro-warn-ink)' }}>49.8 Hz</b> against a <b>50 Hz</b> card claim — within tolerance, but worth a glance.
             </p>
           </div>
 

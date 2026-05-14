@@ -166,8 +166,22 @@ function CommandPalette({ query, setQuery, commands, onRun, onClose }) {
 function App() {
   const [t, setT] = window.useTweaks(RO_TWEAK_DEFAULTS);
   const [tab, setTab] = React.useState('browse');
+  const [datasets, setDatasets] = React.useState(window.RO_DATASETS);
+  const [activeDatasetId, setActiveDatasetId] = React.useState(() => {
+    return window.RO_DATASETS.find(dataset => dataset.current)?.id || window.RO_DATASETS[0]?.id || '';
+  });
+  const [filters, setFilters] = React.useState({
+    search: '',
+    success: 'all',
+    reviewed: 'all',
+    sensorQA: 'all',
+    minIntv: '0',
+    maxSec: '999',
+    sort: 'readiness',
+  });
   const [commandOpen, setCommandOpen] = React.useState(false);
   const [commandQuery, setCommandQuery] = React.useState('');
+  const activeDataset = datasets.find(dataset => dataset.id === activeDatasetId) || datasets[0] || null;
 
   React.useEffect(() => {
     const r = document.documentElement;
@@ -192,6 +206,28 @@ function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  function selectDataset(datasetId) {
+    setActiveDatasetId(datasetId);
+    setTab('browse');
+  }
+
+  function addOpenedDataset(dataset) {
+    setDatasets(current => {
+      const existingIndex = current.findIndex(item => item.id === dataset.id);
+      if (existingIndex >= 0) {
+        const next = [...current];
+        next[existingIndex] = { ...next[existingIndex], ...dataset };
+        return next;
+      }
+      return [...current, dataset];
+    });
+    selectDataset(dataset.id);
+  }
+
+  function updateFilter(key, value) {
+    setFilters(current => ({ ...current, [key]: value }));
+  }
+
   const SCREENS = {
     browse:   window.BrowseScreen,
     scrub:    window.ScrubScreen,
@@ -213,9 +249,18 @@ function App() {
       keywords: `${surface.id} screen view`,
       run: () => setTab(surface.id),
     }));
+    const datasetCommands = datasets.map(dataset => ({
+      id: `dataset-${dataset.id}`,
+      label: `Open ${dataset.name}`,
+      group: 'Datasets',
+      shortcut: dataset.id === activeDatasetId ? 'current' : '',
+      keywords: `${dataset.name} ${dataset.format}`,
+      run: () => selectDataset(dataset.id),
+    }));
 
     return [
       ...tabCommands,
+      ...datasetCommands,
       { id: 'open-dataset', label: 'Open dataset', group: 'Dataset', shortcut: '⌘O', keywords: 'load import lerobot rlds hdf5', run: () => setTab('browse') },
       { id: 'review-failures', label: 'Review failure clusters', group: 'Failure taxonomy', shortcut: 'F', keywords: 'cluster taxonomy failures', run: () => setTab('failures') },
       { id: 'run-vla-probe', label: 'Run VLA probe', group: 'Model QA', shortcut: 'P', keywords: 'probe policy vla model', run: () => setTab('probe') },
@@ -225,7 +270,7 @@ function App() {
       { id: 'toggle-theme', label: `Switch to ${t.theme === 'dark' ? 'light' : 'dark'} mode`, group: 'View', shortcut: 'T', keywords: 'theme mode light dark', run: () => setT('theme', t.theme === 'dark' ? 'light' : 'dark') },
       { id: 'settings', label: 'Open platform settings', group: 'Platform', shortcut: ',', keywords: 'hooks telemetry signing key', run: () => setTab('settings') },
     ];
-  }, [tab, t.theme]);
+  }, [tab, t.theme, datasets, activeDatasetId]);
 
   function runCommand(command) {
     command.run();
@@ -241,17 +286,24 @@ function App() {
   return (
     <>
       <div className="ro studio-shell" data-screen-label={`Robotics Studio · ${tab}`}>
-        <window.LeftRail/>
+        <window.LeftRail
+          datasets={datasets}
+          activeDatasetId={activeDatasetId}
+          onSelectDataset={selectDataset}
+          onDatasetOpened={addOpenedDataset}
+          filters={filters}
+          onFilterChange={updateFilter}
+        />
         <div className="ro-main-frame">
-          <window.TopBar tab={tab} onTab={setTab} theme={t.theme} onTheme={v => setT('theme', v)} onCommand={() => setCommandOpen(true)}/>
-          <window.TabBar tab={tab} onTab={setTab}/>
+          <window.TopBar tab={tab} onTab={setTab} theme={t.theme} onTheme={v => setT('theme', v)} onCommand={() => setCommandOpen(true)} dataset={activeDataset}/>
+          <window.TabBar tab={tab} onTab={setTab} density={t.density} onDensity={v => setT('density', v)}/>
           <div className="workbench ro-workbench">
             <main className="ro-workbench-main">
-              <Screen onTab={setTab}/>
+              <Screen onTab={setTab} dataset={activeDataset} filters={filters}/>
             </main>
-            {!fullWidth && <window.RightRail/>}
+            {!fullWidth && <window.RightRail dataset={activeDataset}/>}
           </div>
-          <window.StatusBar tab={tab}/>
+          <window.StatusBar tab={tab} dataset={activeDataset} density={t.density}/>
         </div>
       </div>
 
