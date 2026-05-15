@@ -2,6 +2,20 @@
 
 Date: 2026-05-13
 
+## Public Preview Release
+
+Update: v0.1.0 is published as a public macOS Apple Silicon preview release.
+
+- Release: `https://github.com/auraoneai/robotics-studio-open/releases/tag/v0.1.0`
+- Latest release: `https://github.com/auraoneai/robotics-studio-open/releases/latest`
+- DMG: `Robotics.Studio.Open_0.1.0_aarch64.dmg`
+- SHA-256: `8d87ef9b986d5eff6b196a2f0016b300495bea1bdaa5526869fc5279c31a0c5c`
+- Target commit: `bd6ad17c6167903d5bdaf78626d6dc6d6f07cc05`
+
+The preview DMG was downloaded back from GitHub Releases, verified with
+`SHA256SUMS`, mounted, and checked with the packaged startup probe. Signed and
+notarized stable-channel installers remain separate release work.
+
 ## Completed Setup
 
 - Public GitHub repository reserved: `https://github.com/auraoneai/robotics-studio-open`.

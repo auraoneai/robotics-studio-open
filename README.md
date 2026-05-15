@@ -13,6 +13,36 @@ It is the integrated home for the AuraOne robotics OSS stack:
 
 The standalone packages remain importable and runnable. Robotics Studio Open gives the daily review workflow a desktop surface.
 
+## Download
+
+Robotics Studio Open v0.1.0 is available as a public macOS Apple Silicon preview build:
+
+- Release: <https://github.com/auraoneai/robotics-studio-open/releases/tag/v0.1.0>
+- Latest download page: <https://github.com/auraoneai/robotics-studio-open/releases/latest>
+- DMG asset: `Robotics.Studio.Open_0.1.0_aarch64.dmg`
+- SHA-256: `8d87ef9b986d5eff6b196a2f0016b300495bea1bdaa5526869fc5279c31a0c5c`
+
+Verify the download with the published `SHA256SUMS` file:
+
+```bash
+shasum -a 256 -c SHA256SUMS
+```
+
+This preview DMG is distributed through GitHub Releases. Signed and notarized
+stable-channel installers are planned separately; on macOS, you may need to
+right-click the app and choose **Open** the first time.
+
+## Browser Preview
+
+The hosted preview is available at:
+
+```text
+https://robotics-studio.auraone.ai/
+```
+
+The browser preview is for product inspection and walkthroughs. The desktop app
+owns local files, video decode, sensor QA, and export manifests.
+
 ## What It Does
 
 - Opens LeRobot v3/v2, RLDS, OpenX, HDF5, ROS bag, and folder-of-mp4-jsonl datasets.
@@ -46,12 +76,14 @@ The hosted preview is:
 https://robotics-studio.auraone.ai/
 ```
 
-Signed installers and public distribution channels remain gated by the release
-blockers tracked in `docs/release/blockers-2026-05-13.md`.
+For release verification, the v0.1.0 DMG was built from the public repository,
+downloaded from GitHub Releases, checksum-verified, mounted, and checked with
+the packaged startup probe.
 
 ## Docs
 
 - Website route: `https://auraone.ai/open/robotics-studio`
+- Download route: `https://auraone.ai/open/robotics-studio/download`
 - Hosted preview: `https://robotics-studio.auraone.ai/`
 - Quickstart: `docs/quickstart.md`
 - Adapter docs: `docs/adapters.md`
