@@ -19,17 +19,39 @@ Robotics Studio Open v0.1.0 is available as a public macOS Apple Silicon preview
 
 - Release: <https://github.com/auraoneai/robotics-studio-open/releases/tag/v0.1.0>
 - Latest download page: <https://github.com/auraoneai/robotics-studio-open/releases/latest>
+- Stable install script: `release/install.sh`
 - DMG asset: `Robotics.Studio.Open_0.1.0_aarch64.dmg`
 - SHA-256: `8d87ef9b986d5eff6b196a2f0016b300495bea1bdaa5526869fc5279c31a0c5c`
 
-Verify the download with the published `SHA256SUMS` file:
+Install directly on Apple Silicon macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/auraoneai/robotics-studio-open/main/release/install.sh | bash
+```
+
+Preview the installer without downloading or installing files:
+
+```bash
+bash release/install.sh --dry-run
+```
+
+The installer downloads the published DMG, verifies it with `SHA256SUMS`, mounts
+it, and copies `Robotics Studio Open.app` into `/Applications`. To install into
+a user-owned directory:
+
+```bash
+bash release/install.sh --install-dir "$HOME/Applications"
+```
+
+If you download the DMG manually, verify it with the published `SHA256SUMS`
+file:
 
 ```bash
 shasum -a 256 -c SHA256SUMS
 ```
 
-This preview DMG is distributed through GitHub Releases. Signed and notarized
-stable-channel installers are planned separately; on macOS, you may need to
+This preview DMG is distributed through GitHub Releases and is installed by the
+stable script above. It is not notarized yet; on macOS, you may need to
 right-click the app and choose **Open** the first time.
 
 ## Browser Preview
