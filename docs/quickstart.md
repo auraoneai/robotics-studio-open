@@ -5,12 +5,30 @@
 - Browser preview: <https://robotics-studio.auraone.ai/>
 - macOS preview DMG: <https://github.com/auraoneai/robotics-studio-open/releases/latest>
 - AuraOne download redirect: <https://auraone.ai/open/robotics-studio/download>
+- Stable install script: `release/install.sh`
 - Source checkout: <https://github.com/auraoneai/robotics-studio-open>
 
 The browser preview is for inspection and walkthroughs. Use the desktop app when
 you need local dataset access, video decode, sensor QA, or export manifests.
 
-## Verify The Preview DMG
+## Install On Apple Silicon macOS
+
+Use the stable installer script when you want the app copied into
+`/Applications` from the current release channel:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/auraoneai/robotics-studio-open/main/release/install.sh | bash
+```
+
+The installer downloads `Robotics.Studio.Open_0.1.0_aarch64.dmg`, verifies the
+release `SHA256SUMS`, mounts the DMG, and copies the app bundle into place. Run
+it locally with `--dry-run` to inspect the selected release and URLs:
+
+```bash
+bash release/install.sh --dry-run
+```
+
+## Verify The Preview DMG Manually
 
 Download `Robotics.Studio.Open_0.1.0_aarch64.dmg` and `SHA256SUMS` from the
 release page, then run:
@@ -25,9 +43,8 @@ Expected SHA-256 for v0.1.0:
 8d87ef9b986d5eff6b196a2f0016b300495bea1bdaa5526869fc5279c31a0c5c
 ```
 
-The preview build is not the signed/notarized stable installer. If macOS warns
-that the app is from an unidentified developer, right-click the app and choose
-Open.
+The preview build is not notarized yet. If macOS warns that the app is from an
+unidentified developer, right-click the app and choose Open.
 
 ## First Review
 

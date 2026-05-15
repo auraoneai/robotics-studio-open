@@ -13,8 +13,9 @@ Update: v0.1.0 is published as a public macOS Apple Silicon preview release.
 - Target commit: `bd6ad17c6167903d5bdaf78626d6dc6d6f07cc05`
 
 The preview DMG was downloaded back from GitHub Releases, verified with
-`SHA256SUMS`, mounted, and checked with the packaged startup probe. Signed and
-notarized stable-channel installers remain separate release work.
+`SHA256SUMS`, mounted, and checked with the packaged startup probe. The stable
+installer script now targets the v0.1.0 Apple Silicon DMG; notarization remains
+separate Apple Developer release work.
 
 ## Completed Setup
 
@@ -44,10 +45,7 @@ No secrets were printed.
 Run from repository root:
 
 ```bash
-node opensource/open-studio-platform/scripts/verify-robotics-release-ops.mjs
-bash opensource/open-studio-platform/installers/robotics-studio-open/install.sh --dry-run
-pwsh -File opensource/open-studio-platform/installers/robotics-studio-open/install.ps1 -DryRun
-brew audit --cask --new opensource/open-studio-platform/distribution/homebrew/Casks/robotics-studio-open.rb
+bash release/install.sh --dry-run
 ```
 
 ## Remaining Blockers
