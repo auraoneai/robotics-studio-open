@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   package:
+    environment: release
     strategy:
       fail-fast: false
       matrix:
@@ -44,31 +45,85 @@ jobs:
         run: |
           test -x scripts/build-release-artifacts.sh
           scripts/build-release-artifacts.sh "${{ inputs.version || github.ref_name }}" "${{ matrix.artifact }}"
+      - name: Verify release signing custody
+        shell: bash
+        env:
+          AURAONE_APPLE_ID: ${{ secrets.AURAONE_APPLE_ID }}
+          AURAONE_APPLE_TEAM_ID: ${{ secrets.AURAONE_APPLE_TEAM_ID }}
+          AURAONE_APPLE_APP_PASSWORD: ${{ secrets.AURAONE_APPLE_APP_PASSWORD }}
+          AURAONE_NOTARY_KEY_P8: ${{ secrets.AURAONE_NOTARY_KEY_P8 }}
+          AURAONE_NOTARY_KEY_ID: ${{ secrets.AURAONE_NOTARY_KEY_ID }}
+          AURAONE_NOTARY_ISSUER_ID: ${{ secrets.AURAONE_NOTARY_ISSUER_ID }}
+          AURAONE_WINDOWS_CERT_THUMBPRINT: ${{ secrets.AURAONE_WINDOWS_CERT_THUMBPRINT }}
+          AURAONE_WINDOWS_PFX_PATH: ${{ secrets.AURAONE_WINDOWS_PFX_PATH }}
+          AURAONE_WINDOWS_PFX_PASSWORD: ${{ secrets.AURAONE_WINDOWS_PFX_PASSWORD }}
+          AURAONE_GPG_KEY_ID: ${{ secrets.AURAONE_GPG_KEY_ID }}
+          AURAONE_RELEASE_GPG_PRIVATE_KEY: ${{ secrets.AURAONE_RELEASE_GPG_PRIVATE_KEY }}
+        run: |
+          case "${{ runner.os }}" in
+            macOS)
+              if [ -n "$AURAONE_NOTARY_KEY_P8" ]; then
+                test -n "$AURAONE_NOTARY_KEY_ID"
+                test -n "$AURAONE_NOTARY_ISSUER_ID"
+              else
+                test -n "$AURAONE_APPLE_ID"
+                test -n "$AURAONE_APPLE_TEAM_ID"
+                test -n "$AURAONE_APPLE_APP_PASSWORD"
+              fi
+              ;;
+            Windows)
+              test -n "${AURAONE_WINDOWS_CERT_THUMBPRINT}${AURAONE_WINDOWS_PFX_PATH}"
+              if [ -n "$AURAONE_WINDOWS_PFX_PATH" ]; then
+                test -n "$AURAONE_WINDOWS_PFX_PASSWORD"
+              fi
+              ;;
+            Linux)
+              test -n "$AURAONE_GPG_KEY_ID"
+              test -n "$AURAONE_RELEASE_GPG_PRIVATE_KEY"
+              ;;
+          esac
       - name: Sign macOS artifact
         if: runner.os == 'macOS'
         shell: bash
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          AURAONE_APPLE_ID: ${{ secrets.AURAONE_APPLE_ID }}
+          AURAONE_APPLE_TEAM_ID: ${{ secrets.AURAONE_APPLE_TEAM_ID }}
+          AURAONE_APPLE_APP_PASSWORD: ${{ secrets.AURAONE_APPLE_APP_PASSWORD }}
+          AURAONE_NOTARY_KEY_P8: ${{ secrets.AURAONE_NOTARY_KEY_P8 }}
+          AURAONE_NOTARY_KEY_ID: ${{ secrets.AURAONE_NOTARY_KEY_ID }}
+          AURAONE_NOTARY_ISSUER_ID: ${{ secrets.AURAONE_NOTARY_ISSUER_ID }}
         run: scripts/sign-and-notarize-macos.sh dist/
       - name: Sign Windows artifact
         if: runner.os == 'Windows'
         shell: pwsh
         env:
-          WINDOWS_EV_CERT_THUMBPRINT: ${{ secrets.WINDOWS_EV_CERT_THUMBPRINT }}
+          AURAONE_WINDOWS_CERT_THUMBPRINT: ${{ secrets.AURAONE_WINDOWS_CERT_THUMBPRINT }}
+          AURAONE_WINDOWS_PFX_PATH: ${{ secrets.AURAONE_WINDOWS_PFX_PATH }}
+          AURAONE_WINDOWS_PFX_PASSWORD: ${{ secrets.AURAONE_WINDOWS_PFX_PASSWORD }}
         run: scripts/sign-windows.ps1 -ArtifactDirectory dist
+      - name: Import Linux release signing key
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          AURAONE_RELEASE_GPG_PRIVATE_KEY: ${{ secrets.AURAONE_RELEASE_GPG_PRIVATE_KEY }}
+        run: |
+          printf '%s' "$AURAONE_RELEASE_GPG_PRIVATE_KEY" | gpg --batch --import
       - name: Sign Linux artifact
         if: runner.os == 'Linux'
         shell: bash
         env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          AURAONE_GPG_KEY_ID: ${{ secrets.AURAONE_GPG_KEY_ID }}
         run: scripts/sign-linux.sh dist/
       - name: Checksums
+        if: runner.os != 'Linux'
         shell: bash
-        run: |
-          cd dist
-          shasum -a 256 * > SHA256SUMS
+        run: scripts/generate-checksums.sh dist/
+      - name: Signed Linux checksums
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          AURAONE_GPG_KEY_ID: ${{ secrets.AURAONE_GPG_KEY_ID }}
+        run: scripts/generate-checksums.sh dist/
       - uses: actions/upload-artifact@v4
         with:
           name: robotics-studio-open-${{ matrix.artifact }}
@@ -83,11 +138,36 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: release-artifacts
+      - name: Flatten release artifacts
+        shell: bash
+        run: |
+          mkdir -p dist/release
+          find release-artifacts -type f \
+            \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.asc" -o -name "*.sha256" -o -name "SHA256SUMS" -o -name "SHA256SUMS.asc" \) \
+            -exec cp {} dist/release/ \;
+      - name: Import release signing key
+        shell: bash
+        env:
+          AURAONE_RELEASE_GPG_PRIVATE_KEY: ${{ secrets.AURAONE_RELEASE_GPG_PRIVATE_KEY }}
+        run: |
+          test -n "$AURAONE_RELEASE_GPG_PRIVATE_KEY"
+          printf '%s' "$AURAONE_RELEASE_GPG_PRIVATE_KEY" | gpg --batch --import
+      - name: Generate signed aggregate checksums
+        shell: bash
+        env:
+          AURAONE_GPG_KEY_ID: ${{ secrets.AURAONE_GPG_KEY_ID }}
+        run: |
+          test -n "$AURAONE_GPG_KEY_ID"
+          scripts/generate-checksums.sh dist/release
+      - name: Attest release artifacts
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/release/**"
       - name: Publish GitHub release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: release-artifacts/**/*
+          files: dist/release/**/*
       - name: Publish update manifest
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: scripts/publish-update-manifest.sh "${{ inputs.version || github.ref_name }}" "${{ inputs.channel || 'stable' }}" release-artifacts
+        run: scripts/publish-update-manifest.sh "${{ inputs.version || github.ref_name }}" "${{ inputs.channel || 'stable' }}" dist/release
