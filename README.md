@@ -83,7 +83,7 @@ Install the dependency-free dataset-manifest validator and release metadata
 API:
 
 ```bash
-npm install @auraone/robotics-studio@0.2.0
+npm install @auraone/robotics-studio@0.2.1
 npx @auraone/robotics-studio validate ./manifest.json
 ```
 
@@ -149,17 +149,18 @@ checksum, notarization record, and production browser deployment.
 
 The public source, web build, npm metadata, and desktop source archive contain
 no private licensed font binary. Proofline renders with system sans-serif and
-monospace fallbacks. An authorized branded deployment may provide licensed
-typography only through a host-owned stylesheet on an approved same-origin
-path; if it is absent or blocked, the public system fallback remains supported.
-Local capture tooling may use an isolated temporary loopback font boundary, but
-those binaries are never copied into source packages or release artifacts.
+monospace fallbacks. The canonical hosted browser loads licensed AuraOne
+typography through `/fonts/proofline-brand.css`, a same-origin proxy to the
+marketing-site font boundary. If it is absent or blocked, the public system
+fallback remains supported. Local capture tooling may use an isolated temporary
+loopback font boundary, but those binaries are never copied into source
+packages or release artifacts.
 
 ## Source-Build Boundaries
 
 - Archive signing is unavailable; no signing key is generated or stored.
 - Version `0.2.0` is available through the hosted browser and verified macOS
-  DMG. `@auraone/robotics-studio@0.2.0` provides the separate JavaScript
+  DMG. `@auraone/robotics-studio@0.2.1` provides the separate JavaScript
   dataset-manifest validator and release metadata companion.
 - The optional Tauri package is shell scaffolding, not evidence of a connected
   binary adapter, updater publication, signed installer, or native engine.

@@ -6,6 +6,11 @@ const styles = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8
 const main = readFileSync(new URL("../src/main.tsx", import.meta.url), "utf8");
 const captureScript = readFileSync(new URL("../scripts/capture_screenshots.mjs", import.meta.url), "utf8");
 const index = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const vercel = JSON.parse(
+  readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
+) as {
+  rewrites: Array<{ source: string; destination: string }>;
+};
 const legacyRedirect = readFileSync(new URL("../public/Robotics Studio.html", import.meta.url), "utf8");
 const cask = readFileSync(new URL("../release/homebrew-cask.rb", import.meta.url), "utf8");
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
@@ -114,6 +119,15 @@ assert.match(captureScript, /readCaptureFrameProfile/, "capture verification mus
 assert.match(captureScript, /black capture band/, "capture verification must reject black shell bands");
 assert.match(captureScript, /transparent capture pixels/, "capture verification must reject transparent shell bands");
 assert.match(index, /src\/main\.tsx/, "Vite must build the typed React application");
+assert.match(index, /href="\/fonts\/proofline-brand\.css"/, "hosted browser edition must request the official font boundary");
+assert.deepEqual(
+  vercel.rewrites[0],
+  {
+    source: "/fonts/:path*",
+    destination: "https://www.auraone.ai/fonts/:path*",
+  },
+  "hosted fonts must proxy through the canonical AuraOne marketing boundary",
+);
 assert.doesNotMatch(index, /text\/babel|react\.development|robotics\/robotics\.css/, "the legacy browser prototype must not ship");
 assert.match(legacyRedirect, /window\.location\.replace\("\/"\)/, "the legacy named route must redirect to the canonical app");
 assert.doesNotMatch(legacyRedirect, /text\/babel|react\.development|robotics\/robotics\.css/, "the redirect must not embed the legacy UI");
