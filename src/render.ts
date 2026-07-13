@@ -36,7 +36,7 @@ function renderGrid(episodes: Array<{ episodeId: string; task: string; success: 
 }
 
 function renderEmpty(): string {
-  return `<section role="status"><h2>No dataset open</h2><p>Open a LeRobot, RLDS, OpenX, HDF5, ROS bag, or mp4/jsonl folder.</p></section>`;
+  return `<section role="status"><h2>No dataset open</h2><p>Open a JSON manifest or JSONL episode metadata file.</p></section>`;
 }
 
 function renderScrubber(episodeId: string, cursorS: number, durationS: number): string {

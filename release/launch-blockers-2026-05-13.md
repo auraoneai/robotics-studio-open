@@ -1,17 +1,32 @@
-# Launch Blockers as of 2026-05-13
+# Robotics Studio Open Distribution Status
 
-These are external or environment-dependent items that cannot be truthfully checked off from this local workspace without authenticated account access, human approval, legal review, or target hardware.
+Originally created on May 13, 2026 and updated after the public `0.2.0` release
+on **July 13, 2026**.
 
-| Requirement | Status | Exact Next Action |
-|---|---|---|
-| GitHub repo `auraoneai/robotics-studio-open` | Done | Public repo exists with branch protection, DCO, CODEOWNERS, issue labels, and release evidence PR. |
-| Homebrew cask `robotics-studio-open` | Blocked on AuraOne tap credentials | Submit cask after first signed release artifact exists. |
-| PyPI package `robostudio-engine` | Blocked on PyPI publishing token | Publish package from `opensource/robostudio-engine` after owner approval. |
-| `install.auraone.ai/robotics-studio` | Installer ready; CDN route optional | Proxy or redirect to `release/install.sh` from the public repo when the install host is configured. |
-| `robotics-studio.auraone.ai` | Done | Hosted preview resolves over HTTPS. |
-| Windows identity `AuraOne.RoboticsStudioOpen` | Blocked on EV cert/HSM access | Register identity and run MSI signing workflow. |
-| Apple signing identifier `ai.auraone.roboticsstudio` | Blocked on Apple Developer admin | Register identifier and run notarized DMG workflow. |
-| HF Hub sample dataset space | Blocked on HF org token | Create `auraoneai/robotics-studio-so101-synthetic` and upload fixture/readme. |
-| Trademark/legal/privacy/TOS review | Blocked on human legal review | Review PRD, MIT license, telemetry.md, privacy policy, and intake terms. |
-| Design partners, HN post, newsletter, podcasts | Blocked on business launch timing | Schedule launch motion after signed beta artifacts and partner approvals. |
-| Mac/Linux/Windows performance baseline | Partially blocked by hardware matrix | Run `ci/performance-baseline.sh` on M2 Pro, Linux x86_64, Windows 11, and GPU runner. |
+The original macOS signing, notarization, DNS, and production-browser blockers
+are resolved. The remaining blockers are destination-specific channels that
+were not verified during the macOS release run.
+
+| Requirement | Current status | Next action |
+| --- | --- | --- |
+| GitHub repository | Live | Maintain protected `main`, signed tags, DCO, and release evidence. |
+| Hosted browser | Live at `robotics-studio.auraone.ai` | Reverify after every production deployment. |
+| GitHub Release | Live at `robotics-studio-open-v0.2.0` | Preserve immutable artifact hashes and release notes. |
+| macOS Apple silicon DMG | Signed, notarized, stapled, Gatekeeper accepted, and published | Rebuild only for a new version or desktop-runtime change. |
+| Homebrew cask | Unpublished | Submit after destination-specific cask audit and clean installation evidence. |
+| Windows MSI and Winget | Unpublished | Produce signed packages and verify install, launch, update, and uninstall on Windows. |
+| Linux AppImage, deb, and rpm | Unpublished | Build and verify on supported Linux distributions. |
+| Automatic updater | Unpublished | Publish only after complete signed cross-platform artifacts and updater manifests exist. |
+| PyPI `robostudio-engine` | Existing standalone package | Treat its package release independently from the visual Studio desktop release. |
+| Hugging Face sample dataset | Unpublished | Publish only with approved synthetic-data documentation and destination credentials. |
+
+## Published macOS Artifact
+
+```text
+Robotics.Studio.Open_0.2.0_aarch64.dmg
+SHA-256 b6d08f308c7806df2d67dc34d6d12e9df9f33e135afd61ced1cbb16653f4cf05
+```
+
+The browser and macOS release are the supported `0.2.0` user-facing channels.
+Do not present staged Windows, Linux, package-manager, or updater metadata as a
+published download.

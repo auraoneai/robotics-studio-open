@@ -4,7 +4,7 @@ import {
   type TelemetryValidationResult,
 } from './telemetry.js';
 
-export type TelemetryLogStatus = 'sent' | 'would_send';
+export type TelemetryLogStatus = 'local_preview' | 'would_send';
 
 export interface TelemetryLogEntry {
   status: TelemetryLogStatus;
@@ -18,7 +18,7 @@ export class TelemetryEventLog {
 
   record(event: TelemetryEvent, telemetryOptedIn: boolean): TelemetryLogEntry {
     const entry: TelemetryLogEntry = {
-      status: telemetryOptedIn ? 'sent' : 'would_send',
+      status: telemetryOptedIn ? 'local_preview' : 'would_send',
       event,
       validation: validateTelemetryEvent(event),
       recorded_at: new Date().toISOString(),
@@ -39,4 +39,3 @@ export class TelemetryEventLog {
     this.entries = [];
   }
 }
-

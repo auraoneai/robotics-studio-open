@@ -1,4 +1,4 @@
-name: Accessibility and Performance
+name: Accessibility and Browser Quality
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   qa:
-    name: Accessibility and Performance / qa
+    name: Accessibility and Browser Quality / qa
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,11 +22,11 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: "10.18.0"
-      - name: Accessibility script presence
-        run: |
-          test -f scripts/verify-accessibility.sh
-          test -f scripts/verify-performance-baseline.sh
-      - name: Accessibility smoke
-        run: scripts/verify-accessibility.sh
-      - name: Performance baseline smoke
-        run: scripts/verify-performance-baseline.sh
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install browser runtime
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Product and accessibility tests
+        run: pnpm test
+      - name: Responsive browser tests
+        run: pnpm test:browser

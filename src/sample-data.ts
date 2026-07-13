@@ -1,81 +1,48 @@
-import type { DatasetTab, Episode } from "./contracts.js";
+import { datasets } from "./data.js";
+import type { DatasetTab, Episode, SensorKind } from "./contracts.js";
+import type { SensorStream as ActiveSensorStream } from "./types.js";
 
-export const sampleEpisodes: Episode[] = [
-  {
-    episodeId: "so101-0001",
-    durationS: 18.4,
-    task: "kitchen-counter-pick-place",
-    split: "train",
-    languageInstruction: "Pick the mug from the counter and place it on the tray.",
-    success: true,
-    embodiment: "SO-101",
-    sensors: [
-      sensor("front_rgb", "rgb", 60),
-      sensor("wrist_rgb", "rgb", 60),
-      sensor("joint_state", "joint_state", 120),
-    ],
-    markers: [
-      { startS: 0, endS: 4.2, label: "approach" },
-      { startS: 4.2, endS: 10.1, label: "grasp" },
-      { startS: 10.1, endS: 18.4, label: "place" },
-    ],
-    interventions: [],
-    failureModes: [],
-    anomalyNotes: [],
-  },
-  {
-    episodeId: "so101-0002",
-    durationS: 21.7,
-    task: "kitchen-counter-pick-place",
-    split: "train",
-    languageInstruction: "Pick the mug from the counter and place it on the tray.",
-    success: false,
-    embodiment: "SO-101",
-    sensors: [
-      sensor("front_rgb", "rgb", 60, { droppedFrames: 12, avSyncMs: 55 }),
-      sensor("wrist_rgb", "rgb", 60),
-      sensor("joint_state", "joint_state", 120),
-    ],
-    markers: [
-      { startS: 0, endS: 5.1, label: "approach" },
-      { startS: 5.1, endS: 14, label: "grasp" },
-      { startS: 14, endS: 21.7, label: "recovery" },
-    ],
-    interventions: [{ startS: 14, endS: 18.2, label: "operator_regrasp" }],
-    failureModes: ["gripper_slip:glass"],
-    anomalyNotes: ["Mug slips after wrist rotation."],
-  },
-  {
-    episodeId: "so101-0003",
-    durationS: 16.9,
-    task: "kitchen-counter-pick-place",
-    split: "train",
-    languageInstruction: "Pick the mug from the counter and place it on the tray.",
-    success: false,
-    embodiment: "SO-101",
-    sensors: [
-      sensor("front_rgb", "rgb", 60, { calibrationError: 0.04 }),
-      sensor("wrist_rgb", "rgb", 60),
-      sensor("joint_state", "joint_state", 120),
-    ],
-    markers: [
-      { startS: 0, endS: 6, label: "approach" },
-      { startS: 6, endS: 16.9, label: "failed_grasp" },
-    ],
-    interventions: [{ startS: 12.4, endS: 15.1, label: "operator_abort" }],
-    failureModes: ["pick_from_bin:occlusion"],
-    anomalyNotes: ["Front camera calibration drift pushes grasp target off object."],
-  },
-];
+const fixture = datasets[0]!;
+
+export const sampleEpisodes: Episode[] = fixture.episodes.map((episode) => ({
+  episodeId: episode.id,
+  durationS: episode.duration ?? 0,
+  task: episode.task ?? "task unknown",
+  split: "synthetic-fixture",
+  languageInstruction: episode.instruction ?? "instruction unknown",
+  success: episode.success === "success" ? true : episode.success === "failure" ? false : null,
+  embodiment: episode.embodiment ?? "embodiment unknown",
+  sensors: episode.sensors.map((sensor) => ({
+    name: sensor.id,
+    kind: legacySensorKind(sensor.kind),
+    sampleRateHz: sensor.rateHz ?? 0,
+    droppedFrames: sensor.qa.droppedFrames ?? 0,
+    calibrationError: sensor.qa.calibrationError ?? 0,
+    avSyncMs: sensor.qa.avSyncMs ?? 0,
+    visible: sensor.visible,
+  })),
+  markers: episode.phases.flatMap((phase) =>
+    phase.start === null || phase.end === null
+      ? []
+      : [{ startS: phase.start, endS: phase.end, label: phase.label }]
+  ),
+  interventions: episode.interventions.flatMap((intervention) =>
+    intervention.start === null || intervention.end === null
+      ? []
+      : [{ startS: intervention.start, endS: intervention.end, label: intervention.why }]
+  ),
+  failureModes: episode.taxonomyTags,
+  anomalyNotes: episode.anomalies.map((anomaly) => anomaly.note),
+}));
 
 export const sampleDatasetTab: DatasetTab = {
-  id: "sample-so101",
-  title: "SO-101 kitchen counter",
-  adapter: "lerobot",
-  path: "fixtures/sample-so101",
+  id: fixture.id,
+  title: fixture.name,
+  adapter: "repository-fixture",
+  path: fixture.root,
   indexedEpisodes: sampleEpisodes.length,
   episodes: sampleEpisodes,
-  selectedEpisodeId: "so101-0002",
+  selectedEpisodeId: sampleEpisodes[0]?.episodeId,
   savedFilters: [
     {
       id: "failures",
@@ -86,20 +53,8 @@ export const sampleDatasetTab: DatasetTab = {
   ],
 };
 
-function sensor(
-  name: string,
-  kind: "rgb" | "joint_state",
-  sampleRateHz: number,
-  overrides: Partial<{ droppedFrames: number; calibrationError: number; avSyncMs: number }> = {},
-) {
-  return {
-    name,
-    kind,
-    sampleRateHz,
-    path: kind === "rgb" ? `${name}.mp4` : undefined,
-    droppedFrames: overrides.droppedFrames ?? 0,
-    calibrationError: overrides.calibrationError ?? 0,
-    avSyncMs: overrides.avSyncMs ?? 0,
-    visible: true,
-  };
+function legacySensorKind(kind: ActiveSensorStream["kind"]): SensorKind {
+  if (kind === "rgb" || kind === "depth" || kind === "audio") return kind;
+  if (kind === "joint") return "joint_state";
+  return "unknown";
 }

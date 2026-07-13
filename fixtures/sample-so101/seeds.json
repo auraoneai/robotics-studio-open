@@ -1,0 +1,53 @@
+{
+  "schema": "auraone.robotics.synthetic-seeds.v1",
+  "seed_scenes": [
+    {
+      "id": "pick-apple",
+      "task": "pick_apple_v2",
+      "instruction": "Pick the apple from the counter and place it in the green tray.",
+      "embodiment": "SO-101",
+      "base_duration_s": 12,
+      "failure_cluster": "gripper-slip",
+      "failure_mode": "manipulation:grasp:slip:gripper_slip:glass",
+      "phases": [
+        ["approach", 0, 0.18],
+        ["align", 0.18, 0.34],
+        ["grasp", 0.34, 0.48],
+        ["transport", 0.48, 0.78],
+        ["place", 0.78, 1]
+      ]
+    },
+    {
+      "id": "place-cup",
+      "task": "place_cup",
+      "instruction": "Move the cup from the work mat to the marked coaster.",
+      "embodiment": "SO-101",
+      "base_duration_s": 15,
+      "failure_cluster": "wrist-occlusion",
+      "failure_mode": "manipulation:grasp:miss:occlusion",
+      "phases": [
+        ["approach", 0, 0.2],
+        ["align", 0.2, 0.38],
+        ["grasp", 0.38, 0.52],
+        ["transport", 0.52, 0.8],
+        ["place", 0.8, 1]
+      ]
+    },
+    {
+      "id": "open-drawer",
+      "task": "open_drawer",
+      "instruction": "Grasp the drawer handle and pull until the drawer reaches the stop.",
+      "embodiment": "SO-101",
+      "base_duration_s": 18,
+      "failure_cluster": "phase-reset",
+      "failure_mode": "planning:sequence:wrong_phase",
+      "phases": [
+        ["approach", 0, 0.22],
+        ["align", 0.22, 0.4],
+        ["grasp", 0.4, 0.56],
+        ["pull", 0.56, 0.84],
+        ["verify", 0.84, 1]
+      ]
+    }
+  ]
+}

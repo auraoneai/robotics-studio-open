@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "generatedAt": "2026-07-13",
+  "generator": "OpenAI image generation",
+  "purpose": "Deterministic bundled sensor media for the repository-owned Robotics Studio Open sample review workflow.",
+  "realWorldRecording": false,
+  "containsCustomerOrWorkerData": false,
+  "files": [
+    {
+      "path": "synthetic-workcell-front-v1.webp",
+      "role": "front-rgb",
+      "dimensions": "1600x900",
+      "sha256": "38ac4ac2f164a064c437acfb443a6fc8c3c7395126aa1324a42269602d47054a"
+    },
+    {
+      "path": "synthetic-workcell-wrist-v1.webp",
+      "role": "wrist-rgb",
+      "dimensions": "1600x900",
+      "sha256": "db443fe3a497bc8ef49d91f9bc3171f726f1bf5021128a328e50b807b447c5b4"
+    }
+  ]
+}

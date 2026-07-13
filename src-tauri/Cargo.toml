@@ -1,11 +1,13 @@
 [package]
 name = "robotics-studio-open"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
-description = "Rust core contracts for Robotics Studio Open."
-build = "build.rs"
-default-run = "robotics-studio-open"
+description = "Source-build Rust contracts for Robotics Studio Open."
+
+[features]
+default = []
+tauri-runtime = ["tauri", "tauri-plugin-deep-link", "tauri-plugin-updater"]
 
 [lib]
 name = "robotics_studio_core"
@@ -15,15 +17,13 @@ path = "src/lib.rs"
 name = "robotics-studio-open"
 path = "src/main.rs"
 
-[build-dependencies]
-tauri-build = { version = "2.5.3", features = [] }
-
 [dependencies]
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.145"
-tauri = { version = "2.11.1", features = [] }
-tauri-plugin-deep-link = "2.4.9"
-tauri-plugin-dialog = "2.4.0"
-tauri-plugin-fs = "2.5.1"
-tauri-plugin-opener = "2.5.4"
-tauri-plugin-updater = "2.10.1"
+auraone-platform-keychain = { path = "../crates/auraone-platform-keychain" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", optional = true, features = [] }
+tauri-plugin-deep-link = { version = "2.4.9", optional = true }
+tauri-plugin-updater = { version = "2.10.1", optional = true }
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }

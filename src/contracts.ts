@@ -29,7 +29,7 @@ export interface Episode {
 export interface DatasetTab {
   id: string;
   title: string;
-  adapter: "lerobot" | "rlds" | "openx" | "hdf5" | "rosbag" | "folder-mp4-jsonl";
+  adapter: "repository-fixture" | "json-manifest" | "jsonl-episodes";
   path: string;
   indexedEpisodes: number;
   episodes: Episode[];
@@ -57,13 +57,13 @@ export interface FailureCluster {
   label: string;
   episodeIds: string[];
   representativeEpisodeId: string;
-  strategy: "clip" | "custom-encoder" | "hash";
+  strategy: "deterministic-fields";
   trainingReadinessScore: number;
 }
 
 export interface VLAProbeRun {
   runId: string;
-  policy: "mock" | "onnx" | "pytorch" | "huggingface";
+  policy: "mock";
   status: "idle" | "running" | "complete" | "error";
   progress: number;
   episodeScores: Array<{ episodeId: string; robustnessScore: number }>;
@@ -115,7 +115,7 @@ export interface CloudHandoffScenario {
 
 export interface StudioState {
   theme: "light" | "dark" | "system";
-  telemetryOptIn: boolean;
+  localDiagnosticBufferEnabled: boolean;
   crashReportsOptIn: boolean;
   activeTabId?: string;
   tabs: DatasetTab[];

@@ -1,23 +1,48 @@
 {
   "name": "robotics-studio-open",
-  "version": "0.1.0",
-  "private": false,
-  "description": "Robotics Studio Open local-first desktop review IDE.",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Local-first robot episode metadata review IDE with deterministic checksummed evidence exports.",
+  "keywords": [
+    "robotics",
+    "robot-datasets",
+    "episode-review",
+    "vla",
+    "quality-assurance",
+    "evidence",
+    "local-first",
+    "tauri"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auraoneai/robotics-studio-open.git"
+  },
+  "homepage": "https://robotics-studio.auraone.ai/",
+  "bugs": {
+    "url": "https://github.com/auraoneai/robotics-studio-open/issues"
+  },
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "prebuild": "pnpm run platform:build",
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "fixture:generate": "node scripts/generate_sample_fixture.mjs",
+    "fixture:verify": "node scripts/generate_sample_fixture.mjs --verify",
+    "prebuild": "pnpm run fixture:verify && pnpm run platform:build",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
-    "pretypecheck": "pnpm run platform:build",
+    "pretypecheck": "pnpm run fixture:verify && pnpm run platform:build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "pretest": "pnpm run platform:build",
-    "test": "tsx tests/studio-smoke.test.ts && tsx tests/platform-inheritance.test.ts && tsx tests/accessibility-smoke.test.ts",
-    "smoke": "pnpm run typecheck && pnpm run test && pnpm run build",
-    "tauri": "tauri",
-    "desktop:check": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "pretest": "pnpm run fixture:verify && pnpm run platform:build",
+    "test": "tsx tests/studio-smoke.test.ts && tsx tests/platform-inheritance.test.ts && tsx tests/accessibility-smoke.test.ts && tsx tests/local-operations.test.ts && tsx tests/proofline-ui.test.ts",
+    "precapture:evidence": "pnpm run fixture:verify && pnpm run platform:build",
+    "capture:evidence": "node scripts/capture_screenshots.mjs",
+    "pretest:capture-evidence": "pnpm run fixture:verify && pnpm run platform:build",
+    "test:capture-evidence": "node scripts/capture_screenshots.mjs --verify",
+    "test:browser": "pnpm run build && playwright test --config playwright.config.ts",
+    "smoke": "pnpm run typecheck && pnpm run test",
     "rust:test": "cargo test --manifest-path src-tauri/Cargo.toml",
-    "platform:build": "pnpm --dir packages/platform-contracts build && pnpm --dir packages/aura-ide-kit build",
-    "preview": "vite preview --host 127.0.0.1"
+    "tauri:build": "tauri build",
+    "tauri:build:mac:signed": "tauri build --bundles dmg",
+    "platform:build": "pnpm --dir packages/proofline-oss build && pnpm --dir packages/platform-contracts build && pnpm --dir packages/aura-ide-kit build"
   },
   "dependencies": {
     "@auraone/aura-ide-kit": "file:packages/aura-ide-kit",
@@ -27,20 +52,21 @@
     "lucide-react": "^0.554.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite": "^5.0.0"
+    "vite": "^6.4.3"
   },
   "devDependencies": {
     "@playwright/test": "1.56.0",
     "@tauri-apps/cli": "2.11.1",
-    "@types/node": "^20.19.25",
+    "@types/node": "22.10.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "axe-core": "4.11.3",
     "tsx": "^4.20.6",
     "typescript": "^5.7.2"
   },
-  "packageManager": "pnpm@10.18.0",
   "engines": {
     "node": ">=20.19.5",
     "pnpm": ">=10.18.0"
-  }
+  },
+  "packageManager": "pnpm@10.18.0"
 }

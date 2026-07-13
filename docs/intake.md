@@ -1,18 +1,14 @@
-# AuraOne Intake Export
+# AuraOne Programs Destination
 
-AuraOne intake export creates an `.auraonepkg` file using the shared Open Studio Platform envelope at `https://schemas.auraone.ai/open-studio/intake-packet/v1.json`.
+AuraOne Programs is visible as an unconfigured network destination so the data
+boundary is explicit. The source build does not create an intake packet,
+authenticate, upload, or report delivery.
 
-The packet contains:
+Selecting AuraOne Programs:
 
-```text
-manifest.json
-privacy/preview.json
-payload/reviewed_subset_manifest.json
-payload/episode_references.json
-payload/failure_clusters.json
-payload/intervention_notes.jsonl
-payload/embodiment_card.md
-payload/sensor_qa_report.json
-```
+- Shows that the destination is not configured.
+- Keeps the primary export action disabled.
+- Does not attempt a network request.
 
-Robotics payloads use the canonical `payload_manifest` roles `robotics_reviewed_subset_manifest`, `robotics_episode_reference`, `robotics_failure_cluster`, `robotics_intervention_note`, `robotics_embodiment_card`, and `robotics_sensor_qa_report`. Raw robot video, ROS bags, local file paths, hostnames, and API keys are excluded; upload requires a local privacy preview.
+Use a local destination to download evidence. Local archives exclude raw robot
+media and browser-selected filesystem paths.

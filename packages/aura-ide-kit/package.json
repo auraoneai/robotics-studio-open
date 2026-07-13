@@ -1,7 +1,26 @@
 {
   "name": "@auraone/aura-ide-kit",
-  "version": "0.1.0",
-  "description": "AuraGlass IDE-class incubation components for AuraOne Open Studio flagships.",
+  "version": "0.2.0",
+  "description": "Accessible IDE components and SSR posture contracts for AuraOne Open Studio apps.",
+  "keywords": [
+    "auraone",
+    "open-studio",
+    "ide",
+    "react",
+    "monaco-editor",
+    "accessibility",
+    "proofline",
+    "desktop-app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auraoneai/open-studio-platform.git",
+    "directory": "packages/aura-ide-kit"
+  },
+  "homepage": "https://github.com/auraoneai/open-studio-platform/tree/main/packages/aura-ide-kit#readme",
+  "bugs": {
+    "url": "https://github.com/auraoneai/open-studio-platform/issues"
+  },
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -31,11 +50,11 @@
     "test:watch": "vitest --environment jsdom"
   },
   "peerDependencies": {
-    "aura-glass": "3.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "dependencies": {
+    "@auraone/proofline-oss": "workspace:*",
     "@monaco-editor/react": "4.7.0",
     "lucide-react": "0.554.0"
   },

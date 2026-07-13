@@ -18,7 +18,13 @@ if (failures.length === 0 || failures.some((episode) => episode.success !== "fai
 }
 
 const sorted = visibleEpisodes(dataset.episodes, defaultFilters, defaultSort);
-if (sorted[0].readiness > sorted[sorted.length - 1].readiness) {
+if (
+  sorted[0]?.readiness !== null
+  && sorted[0]?.readiness !== undefined
+  && sorted.at(-1)?.readiness !== null
+  && sorted.at(-1)?.readiness !== undefined
+  && sorted[0].readiness > sorted.at(-1)!.readiness!
+) {
   throw new Error("default readiness sort must be ascending");
 }
 
@@ -42,8 +48,8 @@ if (formatTime(64.25) !== "01:04.25") {
 
 const pluginManifest: PluginManifest = {
   schema: "https://schemas.auraone.ai/robotics-studio/plugin-manifest/v1.json",
-  plugin_id: "ai.auraone.robostudio.plugins.hdf5_force_panel",
-  name: "HDF5 Force Panel Example",
+  plugin_id: "ai.auraone.robostudio.plugins.local_metadata_panel",
+  name: "Local Metadata Panel Example",
   version: "0.1.0",
   api: "robostudio.plugin.v1",
   description: "Example panel plugin",

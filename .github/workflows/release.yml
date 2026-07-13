@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version, e.g. 0.1.0"
+        description: "Release version without leading v"
         required: true
+        default: "0.2.0"
       channel:
         description: "stable, beta, or nightly"
         required: true
-        default: "beta"
-  release:
-    types: [published]
+        default: "stable"
 
 permissions:
   contents: write
@@ -40,11 +39,22 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: "10.18.0"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux Tauri dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            rpm
       - name: Build release artifact
         shell: bash
         run: |
           test -x scripts/build-release-artifacts.sh
-          scripts/build-release-artifacts.sh "${{ inputs.version || github.ref_name }}" "${{ matrix.artifact }}"
+          scripts/build-release-artifacts.sh "${{ inputs.version }}" "${{ matrix.artifact }}"
       - name: Verify release signing custody
         shell: bash
         env:
@@ -201,6 +211,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AURAONE_RELEASE_BOT_TOKEN }}
         with:
+          tag_name: v${{ inputs.version }}
+          name: Robotics Studio Open ${{ inputs.version }} (${{ inputs.channel }})
+          draft: true
           files: dist/release/**/*
       - name: Publish update manifest
         env:
@@ -208,4 +221,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
           AURAONE_R2_BUCKET: ${{ secrets.AURAONE_R2_BUCKET }}
-        run: scripts/publish-update-manifest.sh "${{ inputs.version || github.ref_name }}" "${{ inputs.channel || 'stable' }}" dist/release
+        run: scripts/publish-update-manifest.sh "${{ inputs.version }}" "${{ inputs.channel }}" dist/release

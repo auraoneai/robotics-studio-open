@@ -1,8 +1,9 @@
-.vercel
-node_modules
-dist
-src-tauri/target
-src-tauri/gen
-*.log
-reports
-.robostudio
+.vercel/
+dist/
+node_modules/
+packages/*/dist/
+packages/*/node_modules/
+src-tauri/target/
+target/
+test-results/
+playwright-report/

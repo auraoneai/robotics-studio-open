@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "product": "Robotics Studio Open",
+  "flagship": "robotics-studio-open",
+  "version": "0.2.0",
+  "channel": "stable",
+  "minimum_window": {
+    "width": 980,
+    "height": 720
+  },
+  "minimum_os": {
+    "macos": "12.0",
+    "windows": "10",
+    "linux": "distribution-supported"
+  },
+  "artifacts": [
+    {
+      "platform": "macos",
+      "format": "dmg",
+      "filename": "Robotics.Studio.Open_0.2.0_aarch64.dmg",
+      "architectures": ["aarch64"]
+    },
+    {
+      "platform": "windows",
+      "format": "msi",
+      "filename": "AuraOne.Robotics.Studio.Open_0.2.0_<arch>.msi",
+      "architectures": ["x86_64", "aarch64"]
+    },
+    {
+      "platform": "linux",
+      "format": "appimage",
+      "filename": "AuraOne.Robotics.Studio.Open_0.2.0_<arch>.AppImage",
+      "architectures": ["x86_64", "aarch64"]
+    },
+    {
+      "platform": "linux",
+      "format": "deb",
+      "filename": "auraone-robotics-studio-open_0.2.0_<arch>.deb",
+      "architectures": ["amd64", "arm64"]
+    },
+    {
+      "platform": "linux",
+      "format": "rpm",
+      "filename": "auraone-robotics-studio-open-0.2.0-1.<arch>.rpm",
+      "architectures": ["x86_64", "aarch64"]
+    }
+  ],
+  "update_states": [
+    "checking",
+    "current",
+    "available",
+    "downloading",
+    "ready-to-restart",
+    "failed",
+    "unsupported",
+    "signature-invalid"
+  ],
+  "required_release_evidence": [
+    "sha256",
+    "signature_result",
+    "notarization_result",
+    "build_commit",
+    "minimum_os",
+    "clean_install_result",
+    "update_result"
+  ],
+  "publication_targets": [
+    "github-release",
+    "homebrew-cask",
+    "winget",
+    "stable-update-manifest"
+  ],
+  "publication_status": "macos-and-browser-published",
+  "publication_blockers": [
+    "Windows MSI signing and clean-machine verification are incomplete",
+    "Linux AppImage, deb, and rpm native verification are incomplete",
+    "Homebrew and Winget submissions require destination-specific review",
+    "stable updater publication remains blocked until cross-platform artifacts are complete"
+  ],
+  "signing_configuration": {
+    "updater_public_key": "configured-in-release-ci",
+    "local_placeholder": "PLATFORM_SHARED_SIGNING_KEY_CONFIGURED_IN_RELEASE_CI"
+  }
+}

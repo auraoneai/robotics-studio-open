@@ -1,16 +1,21 @@
 {
-  "lerobot_version": "v3",
-  "license": "MIT-synthetic",
-  "license_file": "DATASET_CARD.md",
-  "provenance": "AuraOne-authored synthetic metadata fixture; no real robot media, partner data, or third-party demonstrations.",
-  "task": "kitchen-counter-pick-place",
-  "teleop_method": "synthetic phone-guided teleop",
+  "schema": "auraone.robotics.synthetic-fixture-meta.v1",
+  "name": "so101_kitchen_v3",
+  "format": "LeRobot v3 metadata",
+  "license": "MIT",
+  "generated_at": "2026-05-13",
+  "provenance": "AuraOne-authored repository synthetic fixture generated from three seed scenes; no real robot media, partner data, or third-party demonstrations.",
+  "fixture_record_count": 96,
+  "seed_scene_count": 3,
+  "generator": "scripts/generate_sample_fixture.mjs",
   "control_rate_hz": 30,
-  "coordinate_frames": ["base", "wrist", "camera_front"],
-  "joint_limits": {
-    "shoulder_pan": [-2.6, 2.6],
-    "elbow": [-2.0, 2.0],
-    "wrist_roll": [-3.14, 3.14]
+  "sensor_rates_hz": {
+    "cam_front": 30,
+    "cam_wrist": 30,
+    "cam_top_depth": 15,
+    "joint_state": 120,
+    "language": 1
   },
-  "sample_dataset_notice": "Synthetic metadata fixture for Robotics Studio Open smoke tests. No real robot clips."
+  "media_included": false,
+  "sample_dataset_notice": "Synthetic metadata and deterministic data visualizations for Robotics Studio Open source-build review and regression tests."
 }

@@ -4,39 +4,44 @@ Date: 2026-05-13
 
 ## Purpose
 
-This fixture gives Robotics Studio Open a deterministic first-run and smoke-test
-dataset. It is intentionally small and metadata-only so tests can exercise
-adapter, indexing, sensor QA, failure clustering, embodiment card, VLA probe, and
-export flows without shipping real robot clips.
+This repository-owned fixture provides deterministic first-run evidence and
+regression coverage without shipping real robot media.
+
+## Composition
+
+- 96 generated synthetic episode metadata variants.
+- Three documented seed scenes in `seeds.json`: pick apple, place cup, and open
+  drawer.
+- 30 Hz control and episode frame rate.
+- 30 Hz front RGB metadata.
+- 30 Hz wrist RGB metadata.
+- 15 Hz depth metadata.
+- 120 Hz joint-state metadata.
+- 1 Hz language metadata.
+
+`scripts/generate_sample_fixture.mjs` deterministically produces `meta.json`,
+`manifest.json`, and `episodes.jsonl`. `pnpm fixture:verify` byte-compares the
+generated output with the shipped files.
 
 ## Provenance
 
-- Author: AuraOne Robotics Open Source Flagship squad.
-- Source: hand-authored synthetic metadata rows in `episodes.jsonl` and
-  `meta.json`.
-- Media: none. Paths such as `front_rgb/so101-0001.mp4` are schema examples, not
-  bundled files.
-- People, homes, workplaces, customer sites, and partner robot telemetry: none.
-- Third-party demonstrations, Hugging Face datasets, ROS bags, or LeRobot
-  captures: none.
-
-## License
-
-The fixture is distributed under the same MIT terms as Robotics Studio Open.
-`MIT-synthetic` in `meta.json` means the rows are synthetic test metadata and do
-not carry separate robot-data rights from a hardware lab, customer, partner, or
-public dataset.
+- Author: AuraOne.
+- Source: three hand-authored synthetic seed scenes and deterministic generated
+  variants.
+- Media: none.
+- People, homes, workplaces, customers, partners, and real robot telemetry:
+  none.
+- Third-party demonstrations and public dataset records: none.
 
 ## Shipped Files
 
-- `README.md`: fixture summary.
-- `DATASET_CARD.md`: license and provenance audit.
-- `meta.json`: synthetic dataset metadata.
-- `episodes.jsonl`: three synthetic episode records.
+- `seeds.json`
+- `meta.json`
+- `manifest.json`
+- `episodes.jsonl`
+- `README.md`
+- `DATASET_CARD.md`
 
-## Release Checklist
+## License
 
-- No raw video or images are bundled.
-- No private reviewer notes are bundled.
-- No PII, customer identifiers, local file paths, or secrets are bundled.
-- No third-party dataset license is required for the fixture as shipped.
+The fixture is distributed under MIT with Robotics Studio Open.
