@@ -3962,6 +3962,10 @@ button.tertiary {
     overflow: auto;
   }
 
+  .export-surface .sample-provenance {
+    display: none;
+  }
+
   .export-surface .surface h1,
   .export-surface h1 {
     font-size: 24px;

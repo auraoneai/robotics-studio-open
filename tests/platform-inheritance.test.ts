@@ -32,7 +32,9 @@ const tauriConfig = JSON.parse(
   app: { security: { csp: string } };
 };
 
-const canonicalCsp = platformConstants.match(/export const CANONICAL_CSP =\n  "([^"]+)";/)?.[1];
+const canonicalCsp = platformConstants
+  .replaceAll("\r\n", "\n")
+  .match(/export const CANONICAL_CSP =\n  "([^"]+)";/)?.[1];
 if (!canonicalCsp) throw new Error("Unable to read canonical CSP");
 
 assert.equal(packageJson.version, "0.2.0");
