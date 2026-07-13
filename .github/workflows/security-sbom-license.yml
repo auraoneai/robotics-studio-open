@@ -71,3 +71,26 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: sbom.cdx.json
+
+  release-assets:
+    name: Security, SBOM, and License / release-assets
+    if: github.event_name == 'release'
+    needs: release-security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download security artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: security-sbom-license
+          path: release-security
+      - name: Attach SBOM to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$RELEASE_TAG" \
+            "release-security/sbom.cdx.json#CycloneDX SBOM" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
