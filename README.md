@@ -175,7 +175,7 @@ Status verified on **July 13, 2026**:
   Gatekeeper accepted, checksum verified, and offline-install tested.
 - The hosted browser edition is publicly reachable and was visually verified
   with the deterministic 96-episode synthetic fixture.
-- `@auraone/robotics-studio 0.2.0` is public on npm for JSON dataset-manifest
+- `@auraone/robotics-studio 0.2.1` is public on npm for JSON dataset-manifest
   validation and release metadata. It does not contain the visual app.
 - Homebrew, Windows, Linux, native adapter, and automatic updater channels are
   not published for `0.2.0`.
