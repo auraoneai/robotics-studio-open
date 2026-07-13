@@ -49,10 +49,25 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: "10.18.0"
+      - name: Install Linux Tauri dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
       - name: Install JS dependencies when present
         shell: bash
         run: |
           if [ -f package.json ]; then pnpm install --frozen-lockfile; fi
+      - name: Product tests
+        run: pnpm test
+      - name: Production build
+        run: pnpm build
+      - name: Rust tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml
       - name: Python package smoke when present
         shell: bash
         run: |

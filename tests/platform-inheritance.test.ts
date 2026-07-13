@@ -5,96 +5,77 @@ const platformConstants = readFileSync(
   new URL("../packages/platform-contracts/src/constants.ts", import.meta.url),
   "utf8",
 );
-const platformIntake = readFileSync(
-  new URL("../packages/platform-contracts/src/intake.ts", import.meta.url),
-  "utf8",
-);
-const platformTelemetry = readFileSync(
-  new URL("../packages/platform-contracts/src/telemetry.ts", import.meta.url),
-  "utf8",
-);
-const platformKeychain = readFileSync(
-  new URL("../packages/platform-contracts/src/keychain.ts", import.meta.url),
-  "utf8",
-);
-const platformCrash = readFileSync(
-  new URL("../packages/platform-contracts/src/crash.ts", import.meta.url),
-  "utf8",
-);
 const platformRobotics = readFileSync(
   new URL("../packages/platform-contracts/src/robotics.ts", import.meta.url),
   "utf8",
 );
-const tauriCore = readFileSync(new URL("../src-tauri/src/lib.rs", import.meta.url), "utf8");
-const telemetrySchema = JSON.parse(
-  readFileSync(new URL("../schemas/telemetry.schema.json", import.meta.url), "utf8"),
-) as { properties: { app: { properties: { flagship: { enum: string[] } } } } };
-const telemetryEvents = JSON.parse(
-  readFileSync(new URL("../schemas/telemetry-events.json", import.meta.url), "utf8"),
-) as { events: Array<{ name: string; owner: string }> };
-const intakeSchema = JSON.parse(
-  readFileSync(new URL("../schemas/intake-packet.schema.json", import.meta.url), "utf8"),
-) as { properties: { product: { enum: string[] } } };
+const platformStyles = readFileSync(
+  new URL("../packages/aura-ide-kit/src/styles.css", import.meta.url),
+  "utf8",
+);
+const localPlatformContracts = readFileSync(new URL("../src/platformContracts.ts", import.meta.url), "utf8");
 const studioState = readFileSync(new URL("../src/studio-state.ts", import.meta.url), "utf8");
+const tauriCore = readFileSync(new URL("../src-tauri/src/lib.rs", import.meta.url), "utf8");
+const captureScript = readFileSync(new URL("../scripts/capture_screenshots.mjs", import.meta.url), "utf8");
+const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
+  version: string;
+  license: string;
+};
+const releaseManifest = JSON.parse(
+  readFileSync(new URL("../release/release-manifest.json", import.meta.url), "utf8"),
+) as { publication_status: string };
 const tauriConfig = JSON.parse(
   readFileSync(new URL("../src-tauri/tauri.conf.json", import.meta.url), "utf8"),
 ) as {
+  version: string;
   identifier: string;
-  app: { security: { csp: string; capabilities: string[] } };
-  plugins: { updater: { endpoints: string[] }; "deep-link": { desktop: { schemes: string[] } } };
+  app: { security: { csp: string } };
 };
 
-const canonicalCsp = platformConstants.match(/export const CANONICAL_CSP =\n  "([^"]+)";/)?.[1];
-if (!canonicalCsp) {
-  throw new Error("Unable to read CANONICAL_CSP from Open Studio Platform contracts");
-}
+const canonicalCsp = platformConstants
+  .replaceAll("\r\n", "\n")
+  .match(/export const CANONICAL_CSP =\n  "([^"]+)";/)?.[1];
+if (!canonicalCsp) throw new Error("Unable to read canonical CSP");
 
-assert.equal(tauriConfig.app.security.csp, canonicalCsp);
+assert.equal(packageJson.version, "0.2.0");
+assert.equal(packageJson.license, "MIT");
+assert.equal(releaseManifest.publication_status, "macos-and-browser-published");
+assert.equal(tauriConfig.version, "0.2.0");
 assert.equal(tauriConfig.identifier, "ai.auraone.roboticsstudio");
-assert.deepEqual(tauriConfig.app.security.capabilities, ["default"]);
-assert.deepEqual(tauriConfig.plugins["deep-link"].desktop.schemes, ["auraone"]);
-assert.deepEqual(tauriConfig.plugins.updater.endpoints, [
-  "https://updates.auraone.ai/robotics-studio-open/{{target}}/{{arch}}/{{current_version}}",
-  "https://updates2.auraone.ai/robotics-studio-open/{{target}}/{{arch}}/{{current_version}}",
-]);
-assert.ok(telemetrySchema.properties.app.properties.flagship.enum.includes("robotics-studio-open"));
-assert.ok(intakeSchema.properties.product.enum.includes("robotics-studio-open"));
-assert.match(platformCrash, /defaultCrashReporterConfig/);
-assert.match(platformCrash, /enabled:\s*false/);
-assert.match(platformCrash, /scrubPaths:\s*true/);
-assert.match(platformCrash, /scrubApiKeys:\s*true/);
-assert.match(platformKeychain, /'huggingface-token'/);
-assert.match(platformKeychain, /'auraone-cloud-token'/);
-assert.match(studioState, /telemetryOptIn:\s*false/);
+assert.equal(tauriConfig.app.security.csp, canonicalCsp);
+
+assert.match(localPlatformContracts, /ROBOTICS_PLATFORM_HOOKS/);
+assert.match(localPlatformContracts, /source-build-unpublished/);
+assert.match(localPlatformContracts, /attempted:\s*false/);
+assert.match(localPlatformContracts, /configured:\s*false/);
+assert.match(localPlatformContracts, /LocalDiagnosticEventBuffer/);
+assert.match(localPlatformContracts, /createTauriKeychainApi/);
+assert.match(localPlatformContracts, /ensureIntakeInstallSigningKeypair/);
+assert.match(localPlatformContracts, /window\.__TAURI_INTERNALS__/);
+assert.match(localPlatformContracts, /browser source build generates no key/);
+assert.doesNotMatch(
+  localPlatformContracts,
+  /localStorage|sessionStorage|indexedDB|telemetryClient|fetch\(|send\(/i,
+);
+assert.match(studioState, /localDiagnosticBufferEnabled:\s*false/);
 assert.match(studioState, /crashReportsOptIn:\s*false/);
 
-for (const event of ["robotics_dataset_opened", "robotics_feature_used", "robotics_export_completed"]) {
-  assert.ok(
-    telemetryEvents.events.some((entry) => entry.name === event && entry.owner === "robotics-studio-open"),
-    `missing Robotics telemetry event: ${event}`,
-  );
-  assert.match(platformTelemetry, new RegExp(event));
-}
+assert.match(platformRobotics, /ROBOTICS_PLATFORM_HOOKS/);
+assert.match(platformStyles, /\.aura-ide-icon-button:focus-visible/);
 
-for (const role of [
-  "robotics_reviewed_subset_manifest",
-  "robotics_episode_reference",
-  "robotics_failure_cluster",
-  "robotics_intervention_note",
-  "robotics_embodiment_card",
-  "robotics_sensor_qa_report",
-]) {
-  assert.match(platformIntake, new RegExp(`'${role}'`));
-  assert.match(tauriCore, new RegExp(`"${role}"`));
-}
+assert.match(tauriCore, /UnsupportedBinary/);
+assert.match(tauriCore, /JsonManifest/);
+assert.match(tauriCore, /JsonlEpisodes/);
+assert.match(tauriCore, /network_transfer:\s*false/);
+assert.match(tauriCore, /checksums\.sha256/);
+assert.doesNotMatch(tauriCore, /index\.sqlite|SidecarPaths|DatasetFormat::Hdf5|DatasetFormat::RosBag/);
 
-for (const hook of [
-  "video.decode.videotoolbox",
-  "dataset.stream.chunked_ipc",
-  "dataset.stream.sqlite_sidecar_index",
-  "ros.rosbag2_sqlite",
-]) {
-  assert.match(platformRobotics, new RegExp(`'${hook.replaceAll(".", "\\.")}'`));
-}
+assert.match(captureScript, /"pnpm-lock\.yaml"/);
+assert.match(captureScript, /fixtures\/sample-so101/);
+assert.match(captureScript, /platform-contracts\/src/);
+assert.match(captureScript, /platform-contracts\/dist\/robotics\.js/);
+assert.match(captureScript, /Declared capture dependency is missing/);
+assert.match(captureScript, /JSON\.stringify\(evidence\.fixtureInputs\)/);
+assert.match(captureScript, /framePixelProfile/);
 
 console.log("robotics-studio-open platform inheritance checks passed");

@@ -85,6 +85,7 @@ export function AuraIdeTelemetryExample() {
           timestamp: new Date(0).toISOString(),
           optedIn: false,
           destination: "local",
+          deliveryStatus: "would_send",
           payloadPreview: { flagship: "rubric-studio" },
         },
       ]}

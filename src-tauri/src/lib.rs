@@ -1,31 +1,105 @@
+use auraone_platform_keychain::KeychainKey;
+use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DatasetFormat {
-    LeRobotV3,
-    Rlds,
-    OpenX,
-    Hdf5,
-    RosBag,
-    Mp4Jsonl,
-    Unknown,
+pub const ROBOTICS_KEYCHAIN_SERVICE: &str = "robotics-studio-open";
+pub const INTAKE_INSTALL_SIGNING_KEY_SCOPE: &str = "intake-install-signing-key";
+pub const INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER: &str = "ed25519-install-keypair-v1";
+pub const REGISTERED_PLATFORM_KEYCHAIN_COMMANDS: [&str; 4] = [
+    "platform_keychain_set",
+    "platform_keychain_get",
+    "platform_keychain_delete",
+    "platform_keychain_list",
+];
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct PlatformKeychainKey {
+    pub service: String,
+    pub scope: String,
+    pub identifier: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct DatasetOpenRequest {
-    pub root: PathBuf,
+pub fn is_registered_platform_keychain_command(command: &str) -> bool {
+    REGISTERED_PLATFORM_KEYCHAIN_COMMANDS.contains(&command)
+}
+
+pub fn validate_platform_keychain_identity(
+    key: PlatformKeychainKey,
+) -> Result<KeychainKey, String> {
+    let key = KeychainKey::new(key.service, key.scope, key.identifier)
+        .map_err(|error| error.to_string())?;
+    if key.service != ROBOTICS_KEYCHAIN_SERVICE
+        || key.scope != INTAKE_INSTALL_SIGNING_KEY_SCOPE
+        || key.identifier != INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER
+    {
+        return Err(
+            "platform keychain service/scope/identifier combination is not approved".to_string(),
+        );
+    }
+    Ok(key)
+}
+
+pub fn validate_platform_keychain_request(
+    key: PlatformKeychainKey,
+    secret: Option<bool>,
+) -> Result<KeychainKey, String> {
+    if secret != Some(true) {
+        return Err("keychain IPC requires secret=true".to_string());
+    }
+    validate_platform_keychain_identity(key)
+}
+
+pub fn validate_platform_keychain_delete_request(
+    key: PlatformKeychainKey,
+) -> Result<KeychainKey, String> {
+    validate_platform_keychain_identity(key)
+}
+
+pub fn validate_platform_keychain_list_request(
+    service: String,
+    scope: String,
+) -> Result<(String, String), String> {
+    let key = validate_platform_keychain_identity(PlatformKeychainKey {
+        service,
+        scope,
+        identifier: INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER.to_string(),
+    })?;
+    Ok((key.service, key.scope))
+}
+
+pub fn validate_platform_keychain_list_response(
+    identifiers: Vec<String>,
+) -> Result<Vec<String>, String> {
+    if identifiers
+        .iter()
+        .any(|identifier| identifier != INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER)
+    {
+        return Err("platform keychain returned an unapproved identifier".to_string());
+    }
+    Ok(identifiers)
+}
+
+pub fn platform_keychain_fallback_path(app_data_dir: &Path) -> PathBuf {
+    app_data_dir.join("secrets").join("keychain-fallback.json")
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DatasetFormat {
+    JsonManifest,
+    JsonlEpisodes,
+    UnsupportedBinary,
+    Unknown,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct IndexRow {
     pub episode_id: String,
-    pub duration_seconds: f64,
-    pub intervention_count: u32,
+    pub duration_seconds: Option<f64>,
+    pub intervention_count: Option<u32>,
     pub success: Option<bool>,
-    pub reviewed: bool,
+    pub reviewed: Option<bool>,
     pub sensor_qa_status: SensorQaStatus,
-    pub mtime_unix: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -33,58 +107,39 @@ pub enum SensorQaStatus {
     Pass,
     Warn,
     Fail,
+    Unknown,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SidecarPaths {
-    pub index_sqlite: PathBuf,
-    pub thumbs_dir: PathBuf,
-    pub views_json: PathBuf,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ExportPacketPlan {
-    pub manifest_name: String,
-    pub payload_roles: Vec<&'static str>,
+pub struct LocalArchivePlan {
+    pub archive_name: String,
+    pub artifacts: Vec<&'static str>,
     pub episode_count: usize,
-    pub requires_user_consent: bool,
+    pub network_transfer: bool,
 }
 
-pub fn infer_dataset_format(root: &Path, filenames: &[&str]) -> DatasetFormat {
-    let has = |name: &str| filenames.iter().any(|candidate| *candidate == name);
-
-    if has("meta/info.json") || has("episodes.parquet") {
-        DatasetFormat::LeRobotV3
-    } else if has("openx_manifest.json") {
-        DatasetFormat::OpenX
-    } else if filenames
+pub fn infer_dataset_format(filenames: &[&str]) -> DatasetFormat {
+    if filenames
         .iter()
-        .any(|name| name.ends_with(".hdf5") || name.ends_with(".h5"))
+        .any(|name| name.to_ascii_lowercase().ends_with(".jsonl"))
     {
-        DatasetFormat::Hdf5
-    } else if filenames
+        return DatasetFormat::JsonlEpisodes;
+    }
+    if filenames
         .iter()
-        .any(|name| name.ends_with(".db3") || name.ends_with(".bag"))
+        .any(|name| name.to_ascii_lowercase().ends_with(".json"))
     {
-        DatasetFormat::RosBag
-    } else if filenames.iter().any(|name| name.ends_with(".mp4"))
-        && filenames.iter().any(|name| name.ends_with(".jsonl"))
-    {
-        DatasetFormat::Mp4Jsonl
-    } else if has("features.json") || root.to_string_lossy().contains("rlds") {
-        DatasetFormat::Rlds
-    } else {
-        DatasetFormat::Unknown
+        return DatasetFormat::JsonManifest;
     }
-}
-
-pub fn sidecar_paths(root: &Path) -> SidecarPaths {
-    let base = root.join(".robostudio");
-    SidecarPaths {
-        index_sqlite: base.join("index.sqlite"),
-        thumbs_dir: base.join("thumbs"),
-        views_json: base.join("views.json"),
+    if filenames.iter().any(|name| {
+        let lower = name.to_ascii_lowercase();
+        [".parquet", ".h5", ".hdf5", ".bag", ".db3", ".mp4"]
+            .iter()
+            .any(|extension| lower.ends_with(extension))
+    }) {
+        return DatasetFormat::UnsupportedBinary;
     }
+    DatasetFormat::Unknown
 }
 
 pub fn sort_index_rows(rows: &mut [IndexRow]) {
@@ -96,19 +151,28 @@ pub fn sort_index_rows(rows: &mut [IndexRow]) {
     });
 }
 
-pub fn build_intake_packet_plan(episode_count: usize) -> ExportPacketPlan {
-    ExportPacketPlan {
-        manifest_name: "manifest.json".to_string(),
-        payload_roles: vec![
-            "robotics_reviewed_subset_manifest",
-            "robotics_episode_reference",
-            "robotics_failure_cluster",
-            "robotics_intervention_note",
-            "robotics_embodiment_card",
-            "robotics_sensor_qa_report",
-        ],
+pub fn build_local_archive_plan(
+    episode_count: usize,
+    include_interventions: bool,
+    include_sensor_qa: bool,
+    include_embodiment_card: bool,
+) -> LocalArchivePlan {
+    let mut artifacts = vec!["review-manifest.json"];
+    if include_interventions {
+        artifacts.push("interventions.jsonl");
+    }
+    if include_sensor_qa {
+        artifacts.push("sensor-qa.json");
+    }
+    if include_embodiment_card {
+        artifacts.push("EMBODIMENT_CARD.md");
+    }
+    artifacts.push("checksums.sha256");
+    LocalArchivePlan {
+        archive_name: "robotics-evidence.zip".to_string(),
+        artifacts,
         episode_count,
-        requires_user_consent: true,
+        network_transfer: false,
     }
 }
 
@@ -117,6 +181,7 @@ fn qa_rank(status: SensorQaStatus) -> u8 {
         SensorQaStatus::Pass => 0,
         SensorQaStatus::Warn => 1,
         SensorQaStatus::Fail => 2,
+        SensorQaStatus::Unknown => 3,
     }
 }
 
@@ -124,83 +189,176 @@ fn qa_rank(status: SensorQaStatus) -> u8 {
 mod tests {
     use super::*;
 
+    fn intake_signing_key() -> PlatformKeychainKey {
+        PlatformKeychainKey {
+            service: ROBOTICS_KEYCHAIN_SERVICE.to_string(),
+            scope: INTAKE_INSTALL_SIGNING_KEY_SCOPE.to_string(),
+            identifier: INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER.to_string(),
+        }
+    }
+
     #[test]
-    fn detects_supported_dataset_formats() {
-        let root = Path::new("/tmp/rlds-dataset");
+    fn allows_only_the_intake_install_signing_key_identity() {
+        let key = validate_platform_keychain_request(intake_signing_key(), Some(true))
+            .expect("approved intake identity");
+        assert_eq!(key.service, ROBOTICS_KEYCHAIN_SERVICE);
+        assert_eq!(key.scope, INTAKE_INSTALL_SIGNING_KEY_SCOPE);
+        assert_eq!(key.identifier, INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER);
+
+        assert!(validate_platform_keychain_delete_request(intake_signing_key()).is_ok());
         assert_eq!(
-            infer_dataset_format(root, &["meta/info.json"]),
-            DatasetFormat::LeRobotV3
+            validate_platform_keychain_list_request(
+                ROBOTICS_KEYCHAIN_SERVICE.to_string(),
+                INTAKE_INSTALL_SIGNING_KEY_SCOPE.to_string(),
+            )
+            .expect("approved intake list"),
+            (
+                ROBOTICS_KEYCHAIN_SERVICE.to_string(),
+                INTAKE_INSTALL_SIGNING_KEY_SCOPE.to_string(),
+            )
         );
         assert_eq!(
-            infer_dataset_format(root, &["features.json"]),
-            DatasetFormat::Rlds
-        );
-        assert_eq!(
-            infer_dataset_format(root, &["openx_manifest.json"]),
-            DatasetFormat::OpenX
-        );
-        assert_eq!(
-            infer_dataset_format(root, &["demo.hdf5"]),
-            DatasetFormat::Hdf5
-        );
-        assert_eq!(
-            infer_dataset_format(root, &["robot.db3"]),
-            DatasetFormat::RosBag
-        );
-        assert_eq!(
-            infer_dataset_format(root, &["episode.mp4", "episode.jsonl"]),
-            DatasetFormat::Mp4Jsonl
+            validate_platform_keychain_list_response(vec![
+                INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER.to_string(),
+            ])
+            .expect("approved intake identifier"),
+            vec![INTAKE_INSTALL_SIGNING_KEY_IDENTIFIER.to_string()]
         );
     }
 
     #[test]
-    fn creates_standard_sidecar_paths() {
-        let paths = sidecar_paths(Path::new("/datasets/so101"));
+    fn rejects_invalid_keychain_keys_and_secret_markers() {
+        assert!(validate_platform_keychain_request(intake_signing_key(), Some(false)).is_err());
+        assert!(validate_platform_keychain_request(intake_signing_key(), None).is_err());
+
+        let invalid_keys = [
+            PlatformKeychainKey {
+                service: "agent-studio-open".to_string(),
+                ..intake_signing_key()
+            },
+            PlatformKeychainKey {
+                scope: "byo-api-keys".to_string(),
+                ..intake_signing_key()
+            },
+            PlatformKeychainKey {
+                identifier: "different-install-key".to_string(),
+                ..intake_signing_key()
+            },
+            PlatformKeychainKey {
+                service: "robotics studio open".to_string(),
+                ..intake_signing_key()
+            },
+        ];
+
+        for key in invalid_keys {
+            assert!(validate_platform_keychain_request(key.clone(), Some(true)).is_err());
+            assert!(validate_platform_keychain_delete_request(key).is_err());
+        }
+
+        assert!(validate_platform_keychain_list_request(
+            "agent-studio-open".to_string(),
+            INTAKE_INSTALL_SIGNING_KEY_SCOPE.to_string(),
+        )
+        .is_err());
+        assert!(validate_platform_keychain_list_request(
+            ROBOTICS_KEYCHAIN_SERVICE.to_string(),
+            "byo-api-keys".to_string(),
+        )
+        .is_err());
+        assert!(validate_platform_keychain_list_response(vec![
+            "unexpected-install-key".to_string(),
+        ])
+        .is_err());
+    }
+
+    #[test]
+    fn registers_only_the_platform_keychain_commands() {
         assert_eq!(
-            paths.index_sqlite,
-            PathBuf::from("/datasets/so101/.robostudio/index.sqlite")
+            REGISTERED_PLATFORM_KEYCHAIN_COMMANDS,
+            [
+                "platform_keychain_set",
+                "platform_keychain_get",
+                "platform_keychain_delete",
+                "platform_keychain_list",
+            ]
         );
+        for command in REGISTERED_PLATFORM_KEYCHAIN_COMMANDS {
+            assert!(is_registered_platform_keychain_command(command));
+        }
+        assert!(!is_registered_platform_keychain_command(""));
+        assert!(!is_registered_platform_keychain_command(
+            "platform_keychain_export"
+        ));
+    }
+
+    #[test]
+    fn places_the_fallback_under_app_data() {
+        let app_data_dir = Path::new("app-data");
         assert_eq!(
-            paths.thumbs_dir,
-            PathBuf::from("/datasets/so101/.robostudio/thumbs")
-        );
-        assert_eq!(
-            paths.views_json,
-            PathBuf::from("/datasets/so101/.robostudio/views.json")
+            platform_keychain_fallback_path(app_data_dir),
+            app_data_dir.join("secrets").join("keychain-fallback.json")
         );
     }
 
     #[test]
-    fn intake_packet_requires_consent_and_robotics_payloads() {
-        let plan = build_intake_packet_plan(1200);
-        assert!(plan.requires_user_consent);
-        assert_eq!(plan.manifest_name, "manifest.json");
-        assert_eq!(plan.episode_count, 1200);
-        assert!(plan.payload_roles.contains(&"robotics_sensor_qa_report"));
-        assert!(plan.payload_roles.contains(&"robotics_failure_cluster"));
-        assert!(plan.payload_roles.contains(&"robotics_episode_reference"));
+    fn recognizes_only_source_build_metadata_formats() {
+        assert_eq!(
+            infer_dataset_format(&["manifest.json"]),
+            DatasetFormat::JsonManifest
+        );
+        assert_eq!(
+            infer_dataset_format(&["episodes.jsonl"]),
+            DatasetFormat::JsonlEpisodes
+        );
+        for filename in [
+            "episodes.parquet",
+            "demo.hdf5",
+            "robot.db3",
+            "capture.bag",
+            "episode.mp4",
+        ] {
+            assert_eq!(
+                infer_dataset_format(&[filename]),
+                DatasetFormat::UnsupportedBinary
+            );
+        }
     }
 
     #[test]
-    fn sorts_index_by_quality_then_episode_id() {
+    fn local_archive_plan_tracks_real_scope_artifacts() {
+        let full = build_local_archive_plan(96, true, true, true);
+        assert_eq!(full.episode_count, 96);
+        assert!(!full.network_transfer);
+        assert!(full.artifacts.contains(&"interventions.jsonl"));
+        assert!(full.artifacts.contains(&"sensor-qa.json"));
+        assert!(full.artifacts.contains(&"EMBODIMENT_CARD.md"));
+        assert!(full.artifacts.contains(&"checksums.sha256"));
+
+        let minimal = build_local_archive_plan(2, false, false, false);
+        assert_eq!(
+            minimal.artifacts,
+            vec!["review-manifest.json", "checksums.sha256"]
+        );
+    }
+
+    #[test]
+    fn sorts_known_quality_before_unknown_then_episode_id() {
         let mut rows = vec![
             IndexRow {
                 episode_id: "b".to_string(),
-                duration_seconds: 12.0,
-                intervention_count: 0,
-                success: Some(true),
-                reviewed: true,
-                sensor_qa_status: SensorQaStatus::Fail,
-                mtime_unix: 1,
+                duration_seconds: None,
+                intervention_count: None,
+                success: None,
+                reviewed: None,
+                sensor_qa_status: SensorQaStatus::Unknown,
             },
             IndexRow {
                 episode_id: "a".to_string(),
-                duration_seconds: 10.0,
-                intervention_count: 1,
+                duration_seconds: Some(10.0),
+                intervention_count: Some(1),
                 success: Some(false),
-                reviewed: false,
+                reviewed: Some(false),
                 sensor_qa_status: SensorQaStatus::Pass,
-                mtime_unix: 1,
             },
         ];
         sort_index_rows(&mut rows);

@@ -32,3 +32,28 @@ fi
 
 pnpm install --frozen-lockfile
 pnpm build
+
+case "$target" in
+  dmg)
+    bundles="dmg"
+    ;;
+  appimage-deb-rpm)
+    bundles="appimage,deb,rpm"
+    ;;
+  msi)
+    bundles="msi"
+    ;;
+esac
+
+pnpm exec tauri build --bundles "$bundles"
+
+find src-tauri/target/release/bundle -type f \
+  \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) \
+  -exec cp {} dist/ \;
+
+if ! find dist -maxdepth 1 -type f \
+  \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) \
+  -print -quit | grep -q .; then
+  echo "No release artifacts were produced for target: $target" >&2
+  exit 1
+fi

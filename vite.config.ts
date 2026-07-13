@@ -1,60 +1,45 @@
 import react from "@vitejs/plugin-react";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { runInNewContext } from "node:vm";
-import { defineConfig, type Plugin } from "vite";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
 
-type BabelStandalone = {
-  transform(source: string, options: { filename: string; presets: string[] }): { code?: string };
-};
-
-function createBabelTransform() {
-  const sandbox = {} as {
-    Babel?: BabelStandalone;
-    globalThis?: unknown;
-    self?: unknown;
-    window?: unknown;
-  };
-  sandbox.globalThis = sandbox;
-  sandbox.self = sandbox;
-  sandbox.window = sandbox;
-  runInNewContext(readFileSync(resolve(process.cwd(), "public/vendor/babel/babel.min.js"), "utf8"), sandbox);
-
-  return (source: string, filename: string) => {
-    const code = sandbox.Babel?.transform(source, { filename, presets: ["react"] }).code;
-    if (!code) {
-      throw new Error(`Babel did not emit JavaScript for ${filename}`);
-    }
-    return code;
-  };
-}
-
-function compileBabelSourcesForDesktop(): Plugin {
-  const transform = createBabelTransform();
-
-  return {
-    name: "compile-babel-sources-for-desktop",
-    apply: "build",
-    transformIndexHtml: {
-      order: "pre",
-      handler(html) {
-        return html
-          .replace('<script src="vendor/babel/babel.min.js"></script>', "")
-          .replace(/<script\s+type="text\/babel"\s+src="([^"]+)"><\/script>/g, (_match, src: string) => {
-            const source = readFileSync(resolve(process.cwd(), "public", src), "utf8");
-            return `<script>\n${transform(source, src)}\n</script>`;
-          })
-          .replace(/<script\s+type="text\/babel">([\s\S]*?)<\/script>/g, (_match, source: string) => {
-            return `<script>\n${transform(source, "index.html")}\n</script>`;
-          });
-      },
-    },
-  };
-}
+const appRoot = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
-  plugins: [react(), compileBabelSourcesForDesktop()],
+  plugins: [react()],
   clearScreen: false,
+  resolve: {
+    alias: [
+      {
+        find: "@auraone/aura-ide-kit/styles.css",
+        replacement: resolve(appRoot, "packages/aura-ide-kit/src/styles.css"),
+      },
+      {
+        find: "@auraone/proofline-oss/styles.css",
+        replacement: resolve(appRoot, "packages/proofline-oss/src/styles.css"),
+      },
+      {
+        find: "@auraone/proofline-oss/tokens.css",
+        replacement: resolve(appRoot, "packages/proofline-oss/src/tokens.css"),
+      },
+      {
+        find: /^@auraone\/platform-contracts$/,
+        replacement: resolve(appRoot, "packages/platform-contracts/src/index.ts"),
+      },
+      {
+        find: /^@auraone\/aura-ide-kit$/,
+        replacement: resolve(appRoot, "packages/aura-ide-kit/src/index.ts"),
+      },
+      {
+        find: /^@auraone\/proofline-oss$/,
+        replacement: resolve(appRoot, "packages/proofline-oss/src/index.ts"),
+      },
+    ],
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    include: ["@tauri-apps/api/core"],
+  },
   server: {
     host: "127.0.0.1",
     port: 5173,

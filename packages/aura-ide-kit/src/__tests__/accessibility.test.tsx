@@ -8,6 +8,7 @@ import {
   AuraProjectTree,
   AuraStatusBar,
   AuraTabbedShell,
+  AuraTelemetryEventLog,
 } from "../components";
 import { createCommandRegistry } from "../command-registry";
 import { AURA_IDE_COMPONENT_POSTURE, postureFor } from "../ssr-posture";
@@ -96,7 +97,24 @@ describe("Aura IDE accessibility and SSR posture", () => {
             ]}
           />
         }
-        bottomPanel={<AuraProblemsPanel problems={[{ id: "p1", severity: "info", source: "schema", message: "Ready" }]} />}
+        bottomPanel={
+          <>
+            <AuraProblemsPanel problems={[{ id: "p1", severity: "info", source: "schema", message: "Ready" }]} />
+            <AuraTelemetryEventLog
+              events={[
+                {
+                  id: "event-1",
+                  name: "feature_used",
+                  timestamp: "2026-05-13T12:00:00.000Z",
+                  optedIn: true,
+                  destination: "local",
+                  deliveryStatus: "local_preview",
+                  payloadPreview: { feature_id: "rubric.preview", result: "recorded locally" },
+                },
+              ]}
+            />
+          </>
+        }
         statusBar={<AuraStatusBar items={[{ id: "ready", label: "Ready", value: "local" }]} />}
       />,
     );

@@ -10,6 +10,7 @@ import {
   AuraProjectTree,
   AuraStatusBar,
   AuraTabbedShell,
+  AuraTelemetryEventLog,
   AuraUpdatePrompt,
   AuraWelcomePrivacyWizard,
   AuraWelcomeWindow,
@@ -202,5 +203,41 @@ describe("Aura IDE components", () => {
     expect(screen.getByText(/encrypted local fallback store/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
     expect(dismiss).toHaveBeenCalledOnce();
+  });
+
+  it("renders truthful telemetry delivery states and an accessible empty log", () => {
+    const { rerender } = render(<AuraTelemetryEventLog events={[]} />);
+
+    expect(screen.getByText("No local events")).toBeInTheDocument();
+    expect(screen.getByText(/does not confirm network delivery/i)).toBeInTheDocument();
+
+    rerender(
+      <AuraTelemetryEventLog
+        events={[
+          {
+            id: "event-1",
+            name: "feature_used",
+            timestamp: "2026-05-13T12:00:00.000Z",
+            optedIn: true,
+            destination: "local",
+            deliveryStatus: "local_preview",
+            payloadPreview: { feature_id: "rubric.preview" },
+          },
+          {
+            id: "event-2",
+            name: "app_launched",
+            timestamp: "2026-05-13T12:01:00.000Z",
+            optedIn: false,
+            destination: "local",
+            deliveryStatus: "would_send",
+            payloadPreview: {},
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("local preview")).toBeInTheDocument();
+    expect(screen.getByText("not sent")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /feature_used payload preview/i })).toHaveAttribute("tabindex", "0");
   });
 });

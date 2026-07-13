@@ -57,6 +57,7 @@ export type AuraTelemetryEvent = {
   timestamp: string;
   optedIn: boolean;
   destination: "local" | "telemetry" | "crash" | "intake";
+  deliveryStatus?: "local_preview" | "would_send";
   payloadPreview: Record<string, unknown>;
 };
 

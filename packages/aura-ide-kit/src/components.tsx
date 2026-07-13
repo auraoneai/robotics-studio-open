@@ -815,16 +815,38 @@ export function AuraTelemetryEventLog({ events }: { events: AuraTelemetryEvent[]
         <h2>Telemetry Event Log</h2>
       </header>
       <div className="aura-event-log">
-        {events.map((event) => (
-          <article key={event.id} className="aura-event-log__row">
-            <div>
-              <strong>{event.name}</strong>
-              <time dateTime={event.timestamp}>{event.timestamp}</time>
-            </div>
-            <span>{event.optedIn ? event.destination : "local only"}</span>
-            <pre>{JSON.stringify(event.payloadPreview, null, 2)}</pre>
-          </article>
-        ))}
+        {events.length ? (
+          events.map((event) => (
+            <article key={event.id} className="aura-event-log__row">
+              <div>
+                <strong>{event.name}</strong>
+                <time dateTime={event.timestamp}>{event.timestamp}</time>
+              </div>
+              <span>
+                {event.deliveryStatus === "local_preview"
+                  ? "local preview"
+                  : event.deliveryStatus === "would_send"
+                    ? "not sent"
+                    : event.destination === "local"
+                      ? "local only"
+                      : "delivery unverified"}
+              </span>
+              <pre
+                tabIndex={0}
+                role="region"
+                aria-label={`${event.name} payload preview`}
+              >
+                {JSON.stringify(event.payloadPreview, null, 2)}
+              </pre>
+            </article>
+          ))
+        ) : (
+          <AuraEmptyState
+            compact
+            title="No local events"
+            description="Eligible diagnostics appear here after they are recorded. This log does not confirm network delivery."
+          />
+        )}
       </div>
     </section>
   );

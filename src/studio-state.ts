@@ -5,7 +5,7 @@ export function createInitialStudioState(tab: DatasetTab = sampleDatasetTab): St
   const selected = tab.episodes.find((episode) => episode.episodeId === tab.selectedEpisodeId) ?? tab.episodes[0];
   return {
     theme: "system",
-    telemetryOptIn: false,
+    localDiagnosticBufferEnabled: false,
     crashReportsOptIn: false,
     activeTabId: tab.id,
     tabs: [tab],
@@ -95,7 +95,7 @@ function clusterEpisodes(episodes: Episode[]): FailureCluster[] {
     label,
     episodeIds: group.map((episode) => episode.episodeId),
     representativeEpisodeId: group[0]?.episodeId ?? "unknown",
-    strategy: label === "success" ? "hash" : "clip",
+    strategy: "deterministic-fields",
     trainingReadinessScore: Number((group.length / Math.max(1, episodes.length)).toFixed(3)),
   }));
 }
