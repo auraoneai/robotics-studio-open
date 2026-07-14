@@ -124,7 +124,7 @@ assert.deepEqual(
   vercel.rewrites[0],
   {
     source: "/fonts/:path*",
-    destination: "https://www.auraone.ai/fonts/:path*",
+    destination: "https://auraone.ai/fonts/:path*",
   },
   "hosted fonts must proxy through the canonical AuraOne marketing boundary",
 );
