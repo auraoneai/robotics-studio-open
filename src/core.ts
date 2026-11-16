@@ -109,10 +109,6 @@ export function visibleEpisodes(episodes: Episode[], filters: FilterState, sort:
   return sortEpisodes(filterEpisodes(episodes, filters), sort);
 }
 
-export function qaRank(status: SensorQaStatus): number {
-  return status === "pass" ? 0 : status === "warn" ? 1 : status === "fail" ? 2 : 3;
-}
-
 export function summarizeDataset(dataset: DatasetTab) {
   const failures = dataset.episodes.filter((episode) => episode.success === "failure").length;
   const reviewed = dataset.episodes.filter((episode) => episode.reviewed === "reviewed").length;
