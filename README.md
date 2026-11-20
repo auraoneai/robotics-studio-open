@@ -1,5 +1,56 @@
 # Robotics Studio Open
 
+**Local-first robot episode review.** Review robot episode metadata in the browser
+or a local source build, and export checksummed evidence artifacts.
+
+[![Try it in the browser](https://img.shields.io/badge/try%20it-in%20the%20browser-2ea44f)](https://robotics-studio.auraone.ai)
+[![npm](https://img.shields.io/npm/v/@auraone/robotics-studio)](https://www.npmjs.com/package/@auraone/robotics-studio)
+[![CI](https://github.com/auraoneai/robotics-studio-open/actions/workflows/ci.yml/badge.svg)](https://github.com/auraoneai/robotics-studio-open/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/auraoneai/robotics-studio-open/blob/main/LICENSE)
+
+Fastest path: open [robotics-studio.auraone.ai](https://robotics-studio.auraone.ai)
+(read-only hosted build) and choose `Explore sample`. To validate a manifest from
+the command line with the npm companion, from a source checkout:
+
+```bash
+npm install @auraone/robotics-studio@0.2.1
+npx @auraone/robotics-studio validate fixtures/sample-so101/manifest.json
+```
+
+Output (exit code `0`):
+
+```json
+{
+  "valid": true,
+  "issues": []
+}
+```
+
+## What It Does and Doesn't Do
+
+It does:
+
+- open JSON manifests and JSONL episode records and review the RGB, depth,
+  sensor, phase, intervention, anomaly, outcome, and readiness fields they
+  declare;
+- keep missing values as unknown and track fixture versus imported provenance;
+- export a local ZIP of the selected metadata artifacts with SHA-256 checksums.
+
+It doesn't:
+
+- connect a native robotics engine. The current source build reads JSON/JSONL
+  metadata only;
+- decode or play robot video or sensor streams. Parquet, HDF5, ROS bag, DB3,
+  MP4, and other binary inputs are rejected;
+- ship real robot media. The bundled fixture is synthetic SO-101 metadata;
+- upload to Hugging Face Hub or AuraOne Programs.
+
+Part of the AuraOne robotics dataset QA workflow:
+[lerobot-quality-gates](https://auraone.ai/open/lerobot-quality-gates) →
+[Robotics Studio](https://auraone.ai/open/robotics-studio).
+
+## Overview
+
 Robotics Studio Open is AuraOne's MIT-licensed, local source-build cockpit for
 reviewing robot episode metadata and producing checksummed evidence artifacts.
 The application is an evidence-first React interface with an optional Tauri
@@ -14,7 +65,7 @@ artifacts from that evidence.
 
 ## Visual Workflow
 
-![Robotics Studio Open synchronized episode review with the synthetic sensor scene, timeline, health selectors, annotations, and decision controls](https://www.auraone.ai/open/robotics-studio/screenshot-overview.webp)
+![Robotics Studio Open episode review of synthetic SO-101 metadata, showing declared sensor fields, timeline, health selectors, annotations, and decision controls](https://www.auraone.ai/open/robotics-studio/screenshot-overview.webp)
 
 The selected proof image matches the single product view used by the public
 website route. Capture provenance is recorded in the
@@ -203,3 +254,8 @@ destination-specific evidence is published.
 
 Robotics Studio Open and its repository-owned synthetic fixture are licensed
 under MIT.
+
+---
+
+Need reviewed demonstration data or dataset quality operations at scale?
+[Talk to AuraOne](https://auraone.ai/contact?from=open:robotics-studio-open)
